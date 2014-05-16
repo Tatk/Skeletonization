@@ -4,7 +4,10 @@
     <id>org.ekips.filter.skeletonization</id>
     <dependency type="executable" location="extensions">skeletonization.py</dependency>
     <dependency type="executable" location="extensions">inkex.py</dependency>
-    <effect needs-live-preview="false">
+    <param name="copymode" type="optiongroup" _gui-text="Original pattern will be:">
+      <_option value="copy">Copied</_option>
+    </param>
+    <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
             <submenu _name="Modify Path"/>
@@ -14,4 +17,3 @@
         <command reldir="extensions" interpreter="python">skeletonization.py</command>
     </script>
 </inkscape-extension>
-
