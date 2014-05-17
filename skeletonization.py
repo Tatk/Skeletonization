@@ -70,9 +70,6 @@ def lines(p):
                 for k in range(n - i - 2, n - 1):
                     lines.append([p[k][1],p[k + 1][1]])
                 lines.append([p[n - 1][1],p[0][1]])
-                #if i!=n-2:
-		#    for k in range(0,i):
-                #        lines.append([p[k][1],p[k + 1][1]])
                 for k in range(0 ,n - i - 2):
                     lines.append([p[k][1],p[k + 1][1]])
                 p.reverse()
@@ -80,9 +77,11 @@ def lines(p):
                 return lines
             # if termNode is n-point of points list
             if ((p[n-1][1][0] - p[n-2][1][0])*(p[0][1][1] - p[n-1][1][1])<(p[n-1][1][1] - p[n-2][1][1])*(p[0][1][0] - p[n-1][1][0])):
-                for k in range(n - 1):
-                    lines.append([p[k][1],p[k + 1][1]])
+                
+                lines.append([p[n - 2][1],p[n-1][1]])
                 lines.append([p[n - 1][1],p[0][1]])
+                for k in range(n - 2):
+                    lines.append([p[k][1],p[k + 1][1]])
                 p.append(p[0])
                 return lines
             if ((p[n-1][1][0] - p[n-2][1][0])*(p[0][1][1] - p[n-1][1][1])>(p[n-1][1][1] - p[n-2][1][1])*(p[0][1][0] - p[n-1][1][0])):
@@ -128,34 +127,58 @@ def paramOf3Points(X1, X2, X3):
              [2 * (X3[0] - X1[0]), 2 * (X3[1] - X1[1]), -(X3[0] ** 2 - X1[0] ** 2 + X3[1] ** 2 - X1[1] ** 2)]]]
 
 def paramOf3Lines(X1, X2, X3):
-    if ((X2[0] - X1[0]) * (X3[1] - X1[1]) - (X3[0] - X1[0]) * (X2[1] - X1[1]) != 0 and (X2[0] - X1[0]) != 0):
+    if (X2[0] - X1[0]) * (X3[1] - X1[1]) - (X3[0] - X1[0]) * (X2[1] - X1[1]) != 0:
         return [[[X2[0] - X1[0], X2[1] - X1[1], (X2[2] - X1[2])],
-                [X3[0] - X1[0], X3[1] - X1[1], (X3[2] - X1[2])]]]
+                [X3[0] + X1[0], X3[1] + X1[1], (X3[2] + X1[2])]],
+                [[X2[0] + X1[0], X2[1] + X1[1], (X2[2] + X1[2])],
+                [X3[0] - X1[0], X3[1] - X1[1], (X3[2] - X1[2])]],
+                [[X2[0] - X1[0], X2[1] - X1[1], (X2[2] - X1[2])],
+                [X3[0] - X1[0], X3[1] - X1[1], (X3[2] - X1[2])]],
+                [[X2[0] + X1[0], X2[1] + X1[1], (X2[2] + X1[2])],
+                [X3[0] + X1[0], X3[1] + X1[1], (X3[2] + X1[2])]]]
+
+
+    elif (X3[0] - X1[0]) * (X3[1] - X2[1]) - (X3[0] - X2[0]) * (X3[1] - X1[1]) != 0:
+        return [[[X3[0] - X1[0], X3[1] - X1[1], X3[2] - X1[2]],
+                [X3[0] + X2[0], X3[1] + X2[1], X3[2] + X2[2]]],
+                [[X3[0] + X1[0], X3[1] + X1[1], X3[2] + X1[2]],
+                [X3[0] - X2[0], X3[1] - X2[1], X3[2] - X2[2]]],
+                [[X3[0] - X1[0], X3[1] - X1[1], X3[2] - X1[2]],
+                [X3[0] - X2[0], X3[1] - X2[1], X3[2] - X2[2]]],
+                [[X3[0] + X1[0], X3[1] + X1[1], X3[2] + X1[2]],
+                [X3[0] + X2[0], X3[1] + X2[1], X3[2] + X2[2]]]]
     else:
-        return [[[X1[0] + X3[0], X1[1] + X3[1], X1[2] + X3[2]],
-                [X2[0] + X3[0], X2[1] + X3[1], X2[2] + X3[2]]],
-                [[X1[0] - X3[0], X1[1] - X3[1], X1[2] - X3[2]],
-                 [X2[0] - X3[0], X2[1] - X3[1], X2[2] - X3[2]]]]
+        return [[[X1[0] - X2[0], X1[1] - X2[1], X1[2] - X2[2]],
+                [X3[0] + X2[0], X3[1] + X2[1], X3[2] + X2[2]]],
+                [[X1[0] + X2[0], X1[1] + X2[1], X1[2] + X2[2]],
+                [X3[0] - X2[0], X3[1] - X2[1], X3[2] - X2[2]]],
+                [[X1[0] - X2[0], X1[1] - X2[1], X1[2] - X2[2]],
+                [X3[0] - X2[0], X3[1] - X2[1], X3[2] - X2[2]]],
+                [[X1[0] + X2[0], X1[1] + X2[1], X1[2] + X2[2]],
+                [X3[0] + X2[0], X3[1] + X2[1], X3[2] + X2[2]]]]
+
 
 # return centre in case circle tangents to 3 points or 3 lines
 def centreOfFirstCase(X):
-    if (len(X) != 2 and X[0][0][0] * X[0][1][1] - X[0][0][1] * X[0][1][0] != 0 and X[0][0][0] != 0):
-        Yc = -(X[0][0][0] * X[0][1][2] - X[0][1][0] * X[0][0][2]) / (X[0][0][0] * X[0][1][1] - X[0][0][1] * X[0][1][0])
-        return [[-X[0][0][2] / X[0][0][0] - X[0][0][1] * Yc / X[0][0][0], Yc],
-                [-X[0][0][2] / X[0][0][0] - X[0][0][1] * Yc / X[0][0][0], Yc]] 
-    elif (len(X) != 2 and X[0][0][0] * X[0][1][1] - X[0][0][1] * X[0][1][0] != 0 and X[0][0][0] == 0):
-        Yc = -X[0][0][2] / X[0][0][1]
-        return [[-X[0][1][2] / X[0][1][0] - X[0][1][0] / X[0][1][0] * Yc, Yc],
-                [-X[0][1][2] / X[0][1][0] - X[0][1][0] / X[0][1][0] * Yc, Yc]]
+
+    if len(X) != 1:
+        temp = []
+        for i in range(len(X)):
+            if X[i][0][0] !=0 and X[i][0][0]*X[i][1][1] != X[i][0][1]*X[i][1][0] :
+                Yc = -(X[i][0][0] * X[i][1][2] - X[i][1][0] * X[i][0][2]) / (X[i][0][0] * X[i][1][1] - X[i][0][1] * X[i][1][0])
+                temp.append([-X[i][0][2] / X[i][0][0] - X[i][0][1] * Yc / X[i][0][0], Yc])
+            if X[i][0][0] == 0  and X[i][0][0]*X[i][1][1] != X[i][0][1]*X[i][1][0]:
+                Yc1 = -X[i][0][2] / X[i][0][1]
+                temp.append([-X[i][1][2] / X[i][1][0] - X[i][1][0] / X[i][1][0] * Yc1, Yc1])
+        return temp
     else:
-        #Yc1 = (X[0][0][2] - X[0][0][0]*X[0][1][0])/(X[0][1][1]*X[0][0][0] -
-        #X[0][0][1])
-        #Yc2 = (X[1][0][2] - X[1][0][0]*X[1][1][0])/(X[1][1][1]*X[1][0][0] -
-        #X[1][0][1])
-        Yc1 = -(X[0][0][0] * X[0][1][2] - X[0][1][0] * X[0][0][2]) / (X[0][0][0] * X[0][1][1] - X[0][0][1] * X[0][1][0])
-        Yc2 = -(X[1][0][0] * X[1][1][2] - X[1][1][0] * X[1][0][2]) / (X[1][0][0] * X[1][1][1] - X[1][0][1] * X[1][1][0])
-        return [[-(X[0][0][2] / X[0][0][0]) - X[0][0][1] / X[0][0][0] * Yc1, Yc1],
-                [-(X[1][0][2] / X[1][0][0]) - X[1][0][1] / X[1][0][0] * Yc2, Yc2]]
+        if X[0][0][0] != 0:
+            Yc = -(X[0][0][0] * X[0][1][2] - X[0][1][0] * X[0][0][2]) / (X[0][0][0] * X[0][1][1] - X[0][0][1] * X[0][1][0])
+            return [-X[0][0][2] / X[0][0][0] - X[0][0][1] * Yc / X[0][0][0], Yc]
+        else :
+            Yc = -X[0][0][2] / X[0][0][1]
+            return [-X[0][1][2] / X[0][1][0] - X[0][1][0] / X[0][1][0] * Yc, Yc]
+    
 
 ##############################################################################
 # Parametrization to find centre of circle in case circle tangents to 2 points
@@ -171,15 +194,7 @@ def paramA1(X1, X2, X3):
     elif X2[0] != 0:
         return [[-(X2[2] + X3[2]) / 2],[-X2[1] / X2[0]]]
     else: return [[-(X2[2] + X3[2]) / 2 / X2[1]]]
-    
-    #elif X2[0] != 0:
-     #   y = (2*X2[0]*(X2[0]*X1[1] + X2[1]*X1[0]) +
-     #   X2[1]*(X2[2]+X3[2]))/(2*(X2[0]**2 - X2[1]**2))
-      #  return [[-(X2[2]+X3[2])/(2*X2[0]) - X2[1]/x2[0]*y],
-       #         [y]]
-    #else:
-     #   return [[X1[0]],
-      #          [(X2[2]+X3[2])/(2*X2[1])]]
+
 def paramA2(X1, X2, X3):
     if (X2[0] - X1[0]) != 0:
         return [[(X2[0] ** 2 - X1[0] ** 2 + X2[1] ** 2 - X1[1] ** 2) / (2 * (X2[0] - X1[0]))],
@@ -205,18 +220,18 @@ def paramB(line1,line2, point):
                 1,
                 -y,
                 0,
-                distPoints([[x,y],point]) ** 2 - R ** 2]
+                distPoints([[x,y],point]) ** 2 - R ** 2 + x**2 + y**2]
     else:
         line = paramOfLine(line2)
         x = point[0]
-        y = (line[2] + line1[2]) / 2 / line[1]
+        y = -(line[2] + line1[2]) / 2 / line[1]
         R = line[0] * projectionC(line2,point)[0] + line[1] * projectionC(line2,point)[1] + line[2]
         return [1,
                 -y,
                 1,
                 -x,
                 0,
-                distPoints([[x,y],point]) ** 2 - R ** 2]
+                distPoints([[x,y],point]) ** 2 - R ** 2 + x**2 + y**2]
 
 def paramC(A, B):
     if len(A) != 1:
@@ -312,7 +327,7 @@ def intersectionSegments(centre, line, point, segments, points,dist):
             if testingCentre(projectionC(segments[i],centre),segments[i]):
                 distSegment = distPoints([projectionC(segments[i],centre),centre])
                 dist_points = distPoints([centre,points[k]])
-                if ((distSegment > dist or math.fabs(distSegment - dist) < 0.3) and (dist_points > dist or math.fabs(dist_points - dist) < 0.3)):0
+                if ((distSegment > dist or math.fabs(distSegment - dist) < 0.03) and (dist_points > dist or math.fabs(dist_points - dist) < 0.03)):0
                 else: return False
     return True
 #find intersection between distance from first end point of bisector to
@@ -321,11 +336,15 @@ def intersectionSegments(centre, line, point, segments, points,dist):
 def testingCurve(centre, lines, actBis):
 
     for line in lines:
-        if ((not line in actBis) and testingCentre(projectionC(line,centre),line) and math.fabs(paramOfLine([centre,actBis[2]])[0] * paramOfLine(line)[1] - paramOfLine([centre,actBis[2]])[1] * paramOfLine(line)[0]) > 0.001):
+        if ((not line in actBis) and testingCentre(projectionC(line,centre),line) 
+            and math.fabs(paramOfLine([centre,actBis[2]])[0] * paramOfLine(line)[1] - paramOfLine([centre,actBis[2]])[1] * paramOfLine(line)[0]) > 0.001):
             d = centreOfFirstCase([[paramOfLine([centre,actBis[2]]),paramOfLine(line)]])
             if (d and #if intersection between possible bisector and segment exist return false
-                ((line[0][0] < d[0][0] < line[1][0] or line[0][0] > d[0][0] > line[1][0]) and (line[0][1] < d[0][1] < line[1][1] or line[0][1] > d[0][1] > line[1][1]) and (centre[0] < d[0][0] < actBis[2][0] or centre[0] > d[0][0] > actBis[2][0]) and (centre[1] < d[0][1] < actBis[2][1] or centre[1] > d[0][1] > actBis[2][1]))):
-               return False
+                ((line[0][0] < d[0] < line[1][0] or line[0][0] > d[0] > line[1][0]) and 
+                 (line[0][1] < d[1] < line[1][1] or line[0][1] > d[1] > line[1][1]) and 
+                 (centre[0] < d[0] < actBis[2][0] or centre[0] > d[0] > actBis[2][0]) and
+                 (centre[1] < d[1] < actBis[2][1] or centre[1] > d[1] > actBis[2][1]))):
+                return False
     return True
 
 def comparOfLists(T, actBis, readyBisector):
@@ -375,7 +394,7 @@ def addInLists(actBis, tempNodes, activeBisector, readyBisector, skeletNodes, se
                                                                               [projectionC(segment,actBis[2]),
                                                                                projectionC(segment, nodes[0])]),
                                                                  actBis[2], nodes[0])]))
-        if len(actBis[0]) + len(actBis[1]) == 3: skeletNodes.append([actBis[2], virtualNode[0][0], node[1][0]])
+        if len(actBis[0]) + len(actBis[1]) == 3: skeletNodes.append([actBis[2], virtualNode[0], node[1][0]])
         else: skeletNodes.append([actBis[2], node[1][0]])
     else:
         minDistNodes = distPoints([actBis[2],tempNodes[0][0]])
@@ -454,9 +473,9 @@ def Skeletonization(termNode, lines, Points):
                                         node.append([testingCentre(xc, actBis[0]), testingCentre(xc, actBis[1]), testingCentre(xc, T)])
                         
                                         if ((node[0][0] and node[0][1] and node[0][2]) and comparePoints(node[0][0], actBis[2], 0.02) 
-                                            and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][1], 0.02) ] and testingIntersections(node[0][0], actBis[0], [], lines,Points) and testingCurve(node[0][0], lines, actBis)):
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][1], 0.02) ] and testingIntersections(node[0][0], actBis[0], [], lines,Points) and testingCurve(node[0][0], lines, actBis)):
                                             tempNodes.append([node[0][0], T])
-                                            break
+                                        
                         if tempNodes:
                             addInLists(actBis, tempNodes, activeBisector, readyBisector, skeletNodes, actBis[1], lines)
                         
@@ -469,9 +488,9 @@ def Skeletonization(termNode, lines, Points):
 
                             Xc = centreOfFirstCase(paramOf3Points(actBis[0][0],actBis[1][0], T))
 
-                            if (comparePoints(Xc[0], actBis[2],0.02) 
-                                and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc[0], skeletNodes[k][1], 0.02) ] and testingIntersections(Xc[0], [], actBis[0][0], lines, Points) and testingCurve(Xc[0], lines, actBis)):
-                                tempNodes.append([Xc[0], [T]])
+                            if (comparePoints(Xc, actBis[2],0.02) 
+                                and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][1], 0.02) ] and testingIntersections(Xc, [], actBis[0][0], lines, Points) and testingCurve(Xc, lines, actBis)):
+                                tempNodes.append([Xc, [T]])
                             
                     for T in lines: 
                         #if (comparOfLists(T, actBis, readyBisector)):
@@ -522,7 +541,9 @@ def Skeletonization(termNode, lines, Points):
 
                                         if (node[0][0] and node[0][1] 
                                             and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][1], 0.02) ] 
-                                            and comparePoints(node[0][0], actBis[2],0.02) and testingIntersections(node[0][0], T, [], lines, Points) and testingCurve(node[0][0], lines, actBis)):
+                                            and comparePoints(node[0][0], actBis[2],0.02) 
+                                            and testingIntersections(node[0][0], T, [], lines, Points) 
+                                            and testingCurve(node[0][0], lines, actBis)):
                                             tempNodes.append([node[0][0], T])
                                             break
                         if tempNodes:
@@ -705,3 +726,4 @@ class Skeleton(inkex.Effect):
 if __name__ == '__main__':
     e = Skeleton()
     e.affect() 
+
