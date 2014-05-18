@@ -327,7 +327,7 @@ def intersectionSegments(centre, line, point, segments, points,dist):
             if testingCentre(projectionC(segments[i],centre),segments[i]):
                 distSegment = distPoints([projectionC(segments[i],centre),centre])
                 dist_points = distPoints([centre,points[k]])
-                if ((distSegment > dist or math.fabs(distSegment - dist) < 0.03) and (dist_points > dist or math.fabs(dist_points - dist) < 0.03)):0
+                if ((distSegment > dist or math.fabs(distSegment - dist) < 0.05) and (dist_points > dist or math.fabs(dist_points - dist) < 1)):0
                 else: return False
     return True
 #find intersection between distance from first end point of bisector to
@@ -550,13 +550,22 @@ def Skeletonization(termNode, lines, Points):
                             addInLists(actBis, tempNodes, activeBisector, readyBisector, skeletNodes, actBis[1 - i], lines)
                         
        
+    
+    return straightening(skeletNodes)
 
+def straightening(skeletNodes):
+    del skeletNodes[0]
+    for skeletN in skeletNodes:
+        line = []
+        line.append(paramOfLine([skeletN[0],skeletN[-1]]))
+        if len(skeletN)==3 and math.fabs(line[0][0]*skeletN[1][0]+line[0][1]*skeletN[1][1]+line[0][2])<10:
+            del skeletN[1] 
     return skeletNodes
 
 def AbsPath(p):
     a = []
     #a.append(['M' , p[0][1]])
-    for i in range(1,len(p)):
+    for i in range(len(p)):
         if len(p[i]) == 2:
             a.append(['M', p[i][0]])
             a.append(['L', p[i][1]])
@@ -650,10 +659,47 @@ def concavePolygon(List):
             tempList.append(seq)      
     return tempList
 
-
     
-    
+def deleteBranches(skeletNodes, Points, lines, e):
 
+    List = [lines[g][0] for g in range(len(lines))  if not lines[g][0] in Points]
+    k = 0
+    while List:
+        if List[0] in [skeletNodes[k][0]]:
+            if len(skeletNodes[k])==2 and distPoints(skeletNodes[k])<e:
+                
+                temp = []
+                for j in range(len(skeletNodes)):
+                    if skeletNodes[j] == 2 and skeletNodes[k][-1] in [skeletNodes[j][0]]:
+                        temp.append(skeletNodes[j][0])
+                for t in temp:
+                    List.append(t)
+                del skeletNodes[k]
+            k=0
+            del List[0]
+
+        elif List[0] in [skeletNodes[k][-1]] :
+            if len(skeletNodes[k])==2 and distPoints(skeletNodes[k])<e:
+                 
+                temp = []
+                for j in range(len(skeletNodes)):
+                    if skeletNodes[j] == 2 and skeletNodes[k][0] in [skeletNodes[j][-1]] :
+                        temp.append(skeletNodes[j][-1])
+                for t in temp:
+                    List.append(t)
+                del skeletNodes[k]
+            k = 0
+            del List[0]
+        else: k+=1
+        count =0
+        for list in List:
+                for skeletN in skeletNodes:
+                    if len(skeletN)==2 and skeletN[0] in [list] or skeletN[1] in [list]:
+                          if distPoints(skeletN)>e:
+                              count+=1
+        if count == len(List): break
+    skeletNodes.insert(0,skeletNodes[0])
+    return skeletNodes 
 
 
 
@@ -666,6 +712,16 @@ class Skeleton(inkex.Effect):
                                      action="store", type="inkbool", 
                                      dest="copymode", default=False,
                                      help="duplicate pattern before skeletonization")
+
+        self.OptionParser.add_option("-d", "--delete",
+                                     action="store", type="inkbool", 
+                                     dest="delete", default=False,
+                                     help="delete end branches")
+
+        self.OptionParser.add_option("-a", "--accuracy",
+                                     action="store", type="float", 
+                                     dest="accuracy", default=0.0,
+                                     help="accuracy")
 
     def duplicateNodes(self, aList):
         clones={}
@@ -705,7 +761,12 @@ class Skeleton(inkex.Effect):
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
                 #inkex.debug("List: %s" % List)
-            node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
+            if self.options.delete:
+                skeletN = []
+                skeletN.append(deleteBranches(Skeletonization(List[0][0],List[0][1],List[0][2]), List[0][2], List[0][1], self.options.accuracy))
+                node.set('d',simplepath.formatPath(AbsPath(skeletN[0])))
+            else:
+                node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
         else:
             L = concavePolygon(List) 
             for id, node in self.selected.iteritems():
@@ -721,7 +782,12 @@ class Skeleton(inkex.Effect):
                         if self.options.copymode:
                             duplist=self.duplicateNodes({id:self.patternNode})
                             self.patternNode = duplist.values()[0]
-                        node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+                        if self.options.delete:
+                            skeletN = []
+                            skeletN.append(deleteBranches(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][2], List[n][1], self.options.accuracy))
+                            node.set('d',simplepath.formatPath(AbsPath(skeletN[0])))
+                        else:
+                            node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[n][0],List[n][1],List[n][2]))))
 
 if __name__ == '__main__':
     e = Skeleton()
