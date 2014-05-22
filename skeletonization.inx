@@ -5,8 +5,6 @@
     <dependency type="executable" location="extensions">skeletonization.py</dependency>
     <dependency type="executable" location="extensions">inkex.py</dependency>
     <param name="copymode" type="boolean" _gui-text="Original pattern will be copied:">true</param>
-    <param name="delete" type="boolean" _gui-text="Delete end branches:">false</param>
-    <param name="accuracy" type="float" _gui-text="Accuracy" min="-10000.0" max="10000.0">0.0</param>
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
