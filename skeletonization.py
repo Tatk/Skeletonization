@@ -30,6 +30,10 @@ class Point(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+    def __eq__(self, other):
+        if (math.fabs(self.x - other.x)<0.000001 and math.fabs(self.y - other.y)<0.000001):
+            return True
+        else: return False
 
 class GroupPoint(object):
     def __init__(self, point):
@@ -214,17 +218,14 @@ def centreOfFirstCase(A):
         return temp
     # if 3 points
     else:
-        if not (math.fabs(A[0][0][0]) < 0.000001 or  math.fabs(A[0][1][0]) < 0.000001):
+        if not (math.fabs(A[0][0][0]) < 0.000001 or math.fabs(A[i][0][0]*A[i][1][1] - A[i][0][1]*A[i][1][0]) < 0.000001):
             Yc = -((A[0][0][0] * A[0][1][2] - A[0][1][0] * A[0][0][2]) / 
                    (A[0][0][0] * A[0][1][1] - A[0][0][1] * A[0][1][0]))
             return [-A[0][0][2] / A[0][0][0] - A[0][0][1] * Yc / A[0][0][0], Yc]
-        elif not (math.fabs(A[0][0][1]) < 0.000001 or math.fabs(A[0][1][0]) < 0.000001): 
+        else:
             Yc = -A[0][0][2] / A[0][0][1]
             return [-A[0][1][2] / A[0][1][0] - A[0][1][0] / A[0][1][0] * Yc, Yc]
-        else:
-            if not (math.fabs(A[0][1][1]) < 0.000001 or math.fabs(A[0][0][0]) < 0.000001): 
-                Yc = -A[0][1][2] / A[0][1][1]
-                return [-A[0][0][2] / A[0][0][0] - A[0][0][1] / A[0][0][0] * Yc, Yc]
+        
 
 ##############################################################################
 # Parametrization to find centre of circle in case circle tangents to 2 points
@@ -250,6 +251,85 @@ def paramA2(p0, p1):
                 [-(p1.y - p0.y) / (p1.x - p0.x)]]
     else: return [[(p1.y + p0.y) / 2]]
 
+
+
+
+
+def paramB(line1,line2, point):
+    A = line1.paramOfLine()
+    # A = [a, b, c]
+    if (line2 != [] and math.fabs(A[0] * line2.paramOfLine()[1] - A[1] * line2.paramOfLine()[0])>0.000001) or line2 == []:
+        return [A[0] ** 2 - 1,
+                A[0] * A[2] + point.x,
+                A[1] ** 2 - 1,
+                A[1] * A[2] + point.y,
+                A[0] * A[1],
+                line1_[2] ** 2 - point.x ** 2 - point.y ** 2]
+    else:
+       
+        B = line2.paramOfLine()
+
+        C0 = [[[-A[1], A[0], A[1]*point.x - A[0]*point.y],
+               [A[0],A[1],A[2]]]]
+        C1 = [[[-B[1], B[0], B[1]*point.x - B[0]*point.y],
+               [B[0],B[1],B[2]]]]
+        point0 = centreOfFirstCase(C0)
+        point1 = centreOfFirstCase(C1)
+        x = point0[0]+point1[0]
+        y = point0[1]+point1[1]
+        R = Line(Point(x,y),point0).dist_points()
+        return [1,
+                -x,
+                1,
+                -y,
+                0,
+                Line(Point(x,y),point).dist_points() ** 2 - R ** 2 + x**2 + y**2]
+
+def paramC(A, B):
+    if len(A) != 1:
+        return [B[0] * A[1][0] ** 2 + B[2] + 2 * A[1][0] * B[4],
+                B[0] * A[0][0] * A[1][0] + A[1][0] * B[1] + B[3] + B[4] * A[0][0],
+                B[0] * A[0][0] ** 2 + 2 * A[0][0] * B[1] + B[5]]
+    else:
+        return [B[0], B[1] + B[4] * A[0][0], B[2] * A[0][0] ** 2 + 2 * A[0][0] * B[3] + B[5]]
+
+# return centre in case circle tangents to 2 points and line or 2 lines and
+# point
+def centreOfSecondCase(A, C):
+    if C[0] == 0:
+        if len(A) == 2:
+            Yc1 = -C[2] / 2 / C[1]
+            return [[A[0][0] + A[1][0] * Yc1, Yc1],
+                    [A[0][0] + A[1][0] * Yc1, Yc1]]
+        else:
+            Xc1 = -C[2] / 2 / C[1]
+            return [[Xc1, A[0][0]],[Xc1, A[0][0]]]
+        
+    elif math.fabs((C[1] / C[0]) ** 2 - C[2] / C[0]) < 0.000001:
+       if len(A) == 2:
+          Yc1 = -C[1] / C[0]
+          return [[A[0][0] + A[1][0] * Yc1, Yc1],
+                  [A[0][0] + A[1][0] * Yc1, Yc1]]
+       else:
+          Xc1 = -C[1] / C[0]
+          return [[Xc1, A[0][0]],[Xc1, A[0][0]]]
+       
+    elif (((C[1] / C[0]) ** 2) - (C[2] / C[0])) > 0 :
+        if len(A) == 2:
+            Yc1 = -C[1] / C[0] + math.sqrt((C[1] / C[0]) ** 2 - C[2] / C[0])
+            Yc2 = -C[1] / C[0] - math.sqrt((C[1] / C[0]) ** 2 - C[2] / C[0])
+            return [[A[0][0] + A[1][0] * Yc1, Yc1],
+                    [A[0][0] + A[1][0] * Yc2, Yc2]]
+        else:
+            Xc1 = -C[1] / C[0] + math.sqrt((C[1] / C[0]) ** 2 - C[2] / C[0])
+            Xc2 = -C[1] / C[0] - math.sqrt((C[1] / C[0]) ** 2 - C[2] / C[0])
+            return [[Xc1, A[0][0]],[Xc2, A[0][0]]]
+
+    else : return False
+
+##############################################################################
+# Parametrization to find virtual point of Bezier Curve
+##############################################################################
 
 # get projection of the point
 def projectionC(line, point):
