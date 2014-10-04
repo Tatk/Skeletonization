@@ -14,16 +14,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 '''
-#import inkex
-#import cubicsuperpath
-#import simplepath
-#from lxml import etree
-#import copy,
+import inkex
+import cubicsuperpath
+import simplepath
+from lxml import etree
+import copy,
 import math
 import re
 import _random
 
-p = [[[[154.79967, 876.14817], [154.79967, 876.14817], [154.79967, 876.14817]], [[32.314223999999996, 856.97301], [32.314223999999996, 856.97301], [32.314223999999996, 856.97301]], [[95.786357, 988.1309200000001], [95.786357, 988.1309200000001], [95.786357, 988.1309200000001]], [[148.57143, 915.21933], [148.57143, 915.21933], [148.57143, 915.21933]], [[185.71429, 978.07647], [185.71429, 978.07647], [185.71429, 978.07647]], [[191.42857, 889.50504], [191.42857, 889.50504], [191.42857, 889.50504]], [[288.57143, 900.93361], [288.57143, 900.93361], [288.57143, 900.93361]], [[184.16621000000004, 855.1549100000001], [184.16621000000004, 855.1549100000001], [184.16621000000004, 855.1549100000001]], [[140.99455000000003, 801.43969], [140.99455000000003, 801.43969], [140.99455000000003, 801.43969]], [[154.79967, 876.14817], [154.79967, 876.14817], [154.79967, 876.14817]]]]
+#p = [[[[154.79967, 876.14817], [154.79967, 876.14817], [154.79967, 876.14817]], [[32.314223999999996, 856.97301], [32.314223999999996, 856.97301], [32.314223999999996, 856.97301]], [[95.786357, 988.1309200000001], [95.786357, 988.1309200000001], [95.786357, 988.1309200000001]], [[148.57143, 915.21933], [148.57143, 915.21933], [148.57143, 915.21933]], [[185.71429, 978.07647], [185.71429, 978.07647], [185.71429, 978.07647]], [[191.42857, 889.50504], [191.42857, 889.50504], [191.42857, 889.50504]], [[288.57143, 900.93361], [288.57143, 900.93361], [288.57143, 900.93361]], [[184.16621000000004, 855.1549100000001], [184.16621000000004, 855.1549100000001], [184.16621000000004, 855.1549100000001]], [[140.99455000000003, 801.43969], [140.99455000000003, 801.43969], [140.99455000000003, 801.43969]], [[154.79967, 876.14817], [154.79967, 876.14817], [154.79967, 876.14817]]]]
 
 
 class Point(object):
@@ -589,3 +589,71 @@ def AbsPath(sk):
             a.append(['C', sk[i][1] + sk[i][2] + sk[i][2]])
     return a
 
+class Skeleton(inkex.Effect):
+    def __init__(self):
+        inkex.Effect.__init__(self)
+
+        self.OptionParser.add_option("-c", "--copymode",
+                                     action="store", type="inkbool",
+                                     dest="copymode", default=False,
+                                     help="duplicate pattern before skeletonization")
+    def duplicateNodes(self, aList):
+        clones={}
+        for id,node in aList.iteritems():
+            clone=copy.deepcopy(node)
+            myid = node.tag.split('}')[-1]
+            clone.set("id", self.uniqueId(myid))
+            node.getparent().append(clone)
+            clones[clone.get("id")]=clone
+        return(clones)
+    
+    def uniqueId(self, prefix):
+        id="%s%04i"%(prefix,random.randint(0,9999))
+        while len(self.document.getroot().xpath('//*[@id="%s"]' % id,namespaces=inkex.NSS)):
+            id="%s%04i"%(prefix,random.randint(0,9999))
+        return(id)
+
+
+    def effect(self):
+        if len(self.options.ids)==0:
+            inkex.errormsg(("This extension requires greater than or equal to 1 selected paths."))
+            return
+        List = []
+        Id = 0
+        for id, node in self.selected.iteritems():
+            if node.tag == inkex.addNS('path','svg'):
+                Id=id
+                p = cubicsuperpath.parsePath(node.get('d'))
+                inkex.debug("nodes: %s" % p)
+                List.append([termNode(p[0]),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))])
+        
+        if len(List) == 1:
+            self.patternNode=self.selected[Id]
+            self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
+            self.patternNode.getparent().append(self.gNode)
+            if self.options.copymode:
+                duplist=self.duplicateNodes({id:self.patternNode})
+                self.patternNode = duplist.values()[0]
+            node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
+'''     
+        else:
+            L = concavePolygon(List)
+            for id, node in self.selected.iteritems():
+                if node.tag == inkex.addNS('path','svg'):
+                    p = cubicsuperpath.parsePath(node.get('d'))
+                    n=-1
+                    for l in range(len(L)):
+                        if termNode(p[0]) in [L[l][0]]: n=l
+                    if n!=-1:
+                        self.patternNode=self.selected[id]
+                        self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
+                        self.patternNode.getparent().append(self.gNode)
+                        if self.options.copymode:
+                            duplist=self.duplicateNodes({id:self.patternNode})
+                            self.patternNode = duplist.values()[0]
+                        node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+ '''
+
+if __name__ == '__main__':
+    e = Skeleton()
+    e.affect() 
