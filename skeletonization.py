@@ -14,16 +14,16 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 '''
-#import inkex
-#import cubicsuperpath
-#import simplepath
-#from lxml import etree
-#import copy
+import inkex
+import cubicsuperpath
+import simplepath
+from lxml import etree
+import copy
 import math
 import re
 import _random
 
-p = [[[[462.85715, 526.6479], [462.85715, 526.6479], [462.85715, 526.6479]], [[344.24324, 492.0914], [344.24324, 492.0914], [344.24324, 492.0914]], [[248.53238, 570.21207], [248.53238, 570.21207], [248.53238, 570.21207]], [[244.74386, 446.725], [244.74386, 446.725], [244.74386, 446.725]], [[140.8704, 379.83918], [140.8704, 379.83918], [140.8704, 379.83918]], [[257.14286, 338.07648], [257.14286, 338.07648], [257.14286, 338.07648]], [[288.65639999999996, 218.61809], [288.65639999999996, 218.61809], [288.65639999999996, 218.61809]], [[364.30524999999994, 316.29439], [364.30524999999994, 316.29439], [364.30524999999994, 316.29439]], [[487.65514999999994, 309.35087000000004], [487.65514999999994, 309.35087000000004], [487.65514999999994, 309.35087000000004]], [[418.1362499999999, 411.48085000000003], [418.1362499999999, 411.48085000000003], [418.1362499999999, 411.48085000000003]], [[462.85715, 526.6479], [462.85715, 526.6479], [462.85715, 526.6479]]]]
+#p = [[[[462.85715, 526.6479], [462.85715, 526.6479], [462.85715, 526.6479]], [[344.24324, 492.0914], [344.24324, 492.0914], [344.24324, 492.0914]], [[248.53238, 570.21207], [248.53238, 570.21207], [248.53238, 570.21207]], [[244.74386, 446.725], [244.74386, 446.725], [244.74386, 446.725]], [[140.8704, 379.83918], [140.8704, 379.83918], [140.8704, 379.83918]], [[257.14286, 338.07648], [257.14286, 338.07648], [257.14286, 338.07648]], [[288.65639999999996, 218.61809], [288.65639999999996, 218.61809], [288.65639999999996, 218.61809]], [[364.30524999999994, 316.29439], [364.30524999999994, 316.29439], [364.30524999999994, 316.29439]], [[487.65514999999994, 309.35087000000004], [487.65514999999994, 309.35087000000004], [487.65514999999994, 309.35087000000004]], [[418.1362499999999, 411.48085000000003], [418.1362499999999, 411.48085000000003], [418.1362499999999, 411.48085000000003]], [[462.85715, 526.6479], [462.85715, 526.6479], [462.85715, 526.6479]]]]
 
 class Point(object):
     def __init__(self, x, y):
@@ -491,8 +491,8 @@ def Skeletonization(term, Lines, Points):
                                             node = []
                                             node.append([testingCentre(xc, activeBis[0][0]),testingCentre(xc, activeBis[0][1])])
 
-                                            if ((node[0][0] and node[0][1]) and comparePoints(node[0][0], activeBis[0][2], 0.0000001)
-                                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.0000001) ] 
+                                            if ((node[0][0] and node[0][1]) and comparePoints(node[0][0], activeBis[0][2], 0.001)
+                                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.001) ] 
                                                 and testingIntersections(node[0][0], [], T, Lines, Points)):
                                                 tempNodes.append([node[0][0], T])
                                                 break
@@ -507,8 +507,8 @@ def Skeletonization(term, Lines, Points):
                                         node = []
                                         node.append([testingCentre(xc, activeBis[0][0]), testingCentre(xc, activeBis[0][1]), testingCentre(xc, T)])
                         
-                                        if ((node[0][0] and node[0][1] and node[0][2]) and comparePoints(node[0][0], activeBis[0][2], 0.0000001)
-                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.0000001) ] 
+                                        if ((node[0][0] and node[0][1] and node[0][2]) and comparePoints(node[0][0], activeBis[0][2], 0.001)
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.001) ] 
                                         and testingIntersections(node[0][0], activeBis[0][0], [], Lines, Points)):
                                             tempNodes.append([node[0][0], T])
                         if tempNodes:
@@ -522,8 +522,8 @@ def Skeletonization(term, Lines, Points):
                     if (not T in [activeBis[0][0] , activeBis[0][1]] and not [g for g in range(len(skeletNodes)) if T._eq(skeletNodes[g][-1])]):
                          Xc = centreOfFirstCase(paramOf3Points(activeBis[0][0],activeBis[0][1], T))
                          Xc = Point(Xc[0],Xc[1])
-                         if (comparePoints(Xc, activeBis[0][2],0.0000001)
-                             and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.0000001) ] 
+                         if (comparePoints(Xc, activeBis[0][2],0.001)
+                             and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.001) ] 
                              and testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
                              tempNodes.append([Xc, T])
                 for T in Lines:
@@ -534,8 +534,8 @@ def Skeletonization(term, Lines, Points):
                         for xc in Xc :
                             xc = Point(xc[0],xc[1])
                             node = testingCentre(xc, T)
-                            if (node and comparePoints(node, activeBis[0][2], 0.0000001)
-                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.0000001) ]
+                            if (node and comparePoints(node, activeBis[0][2], 0.001)
+                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.001) ]
                                 and testingIntersections(node, [], activeBis[0][0], Lines, Points)):
                                 tempNodes.append([node, T])
                                 break
@@ -565,8 +565,8 @@ def Skeletonization(term, Lines, Points):
                                 for xc in Xc :
                                     xc = Point(xc[0],xc[1])
                                     node = testingCentre(xc, line)
-                                    if (node and comparePoints(node, activeBis[0][2],0.0000001)
-                                             and not[k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.0000001) ]
+                                    if (node and comparePoints(node, activeBis[0][2],0.001)
+                                             and not[k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.001) ]
                                              and testingIntersections(node, [], T, Lines, Points)):
                                         tempNodes.append([node, T])
                                         break
@@ -581,8 +581,8 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, line), testingCentre(xc, T)])
                                     if (node[0][0] and node[0][1]
-                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.0000001) ]
-                                        and comparePoints(node[0][0], activeBis[0][2],0.0000001)
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.001) ]
+                                        and comparePoints(node[0][0], activeBis[0][2],0.001)
                                         and testingIntersections(node[0][0], T, [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                                         break
@@ -598,7 +598,7 @@ def Skeletonization(term, Lines, Points):
             for i in range(3): activeBis[0].remove(activeBis[0][0])
             activeBis.remove(activeBis[0])
     return skeletNodes
-'''
+
 def AbsPath(sk):
     a = []
     for i in range(1,len(sk)):
@@ -656,7 +656,7 @@ class Skeleton(inkex.Effect):
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
             node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
-     
+'''    
         else:
             L = concavePolygon(List)
             for id, node in self.selected.iteritems():
@@ -672,12 +672,12 @@ class Skeleton(inkex.Effect):
                         if self.options.copymode:
                             duplist=self.duplicateNodes({id:self.patternNode})
                             self.patternNode = duplist.values()[0]
-
+'''
 
 if __name__ == '__main__':
     e = Skeleton()
     e.affect() 
-'''
 
-print(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))))
+
+#print(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))))
 
