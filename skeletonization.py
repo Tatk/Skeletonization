@@ -413,10 +413,9 @@ def intersectionSegments(centre, line, point, segments, points,dist):
 #
 def orderSites(lines,sites):
     tempList = []
-    for site in sites:
-        for i in range(len(lines)):
-        
-            if ((isinstance(site[1],Point) and site[1]._eq(lines[i].p1))
+    for i in range(len(lines)):
+        for site in sites:
+            if ((isinstance(site[1],Point) and site[1]._eq(lines[i].p0))
                 or
                 (isinstance(site[1],Line) and 
                 not (site[1].p0._eq(lines[i].p0) or site[1].p1._eq(lines[i].p1))) 
@@ -686,7 +685,7 @@ class Skeleton(inkex.Effect):
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
             node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
-'''
+'''   
         else:
             L = concavePolygon(List)
             for id, node in self.selected.iteritems():
