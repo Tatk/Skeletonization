@@ -23,14 +23,14 @@ import math
 import re
 import random
 
-#p = [[[[257.14285, 506.64789], [257.14285, 506.64789], [257.14285, 506.64789]], [[302.85714, 352.36218], [302.85714, 352.36218], [302.85714, 352.36218]], [[388.57143, 409.50504], [388.57143, 409.50504], [388.57143, 409.50504]], [[314.28571, 226.64789], [314.28571, 226.64789], [314.28571, 226.64789]], [[560.0, 209.50504], [560.0, 209.50504], [560.0, 209.50504]], [[431.42857, 360.93361], [431.42857, 360.93361], [431.42857, 360.93361]], [[708.57143, 443.79075], [708.57143, 443.79075], [708.57143, 443.79075]], [[562.85714, 592.36218], [562.85714, 592.36218], [562.85714, 592.36218]], [[717.14285, 718.07647], [717.14285, 718.07647], [717.14285, 718.07647]], [[248.57143, 695.21932], [248.57143, 695.21932], [248.57143, 695.21932]], [[380.0, 620.93361], [380.0, 620.93361], [380.0, 620.93361]], [[60.0, 652.36218], [60.0, 652.36218], [60.0, 652.36218]], [[214.28571, 583.79075], [214.28571, 583.79075], [214.28571, 583.79075]], [[165.71429, 532.36218], [165.71429, 532.36218], [165.71429, 532.36218]], [[257.14285, 506.64789], [257.14285, 506.64789], [257.14285, 506.64789]]]]
+#p = [[[[342.85715, 586.64791], [342.85715, 586.64791], [342.85715, 586.64791]], [[168.97149, 505.98097], [168.97149, 505.98097], [168.97149, 505.98097]], [[191.95668999999998, 315.67843000000005], [191.95668999999998, 315.67843000000005], [191.95668999999998, 315.67843000000005]], [[380.04797999999994, 278.73193000000003], [380.04797999999994, 278.73193000000003], [380.04797999999994, 278.73193000000003]], [[473.30958999999996, 446.20028], [473.30958999999996, 446.20028], [473.30958999999996, 446.20028]], [[342.85715, 586.64791], [342.85715, 586.64791], [342.85715, 586.64791]]]]
 
 class Point(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
     def _eq(self, other):
-        if (math.fabs(self.x - other.x)<0.000001 and math.fabs(self.y - other.y)<0.000001):
+        if (math.fabs(self.x - other.x)<0.01 and math.fabs(self.y - other.y)<0.01):
             return True
         else: return False
     def ccopy(self):
@@ -61,14 +61,31 @@ class Line(object):
         return [-(self.p1.y - self.p0.y) / Line.dist_points(self),
                 (self.p1.x - self.p0.x) / Line.dist_points(self),
                 (self.p1.y * self.p0.x - self.p0.y * self.p1.x) / Line.dist_points(self)]
-    def _in(self,line):
+    def _inter(self,line):
         if self.p0._eq(line.p0) or self.p0._eq(line.p1):
             return self.p0
         elif self.p1._eq(line.p0) or self.p1._eq(line.p1):
             return self.p1
         else: return False
-
-
+    def _eq(self, line):
+        if self.p0._eq(line.p0) and self.p1._eq(line.p1):
+            return True
+        else: return False
+    
+def inList(activeBis, readyBis):
+    if (((isinstance(activeBis[0], Line) and (isinstance(readyBis[0], Line) and activeBis[0]._eq(readyBis[0])
+                                                 or isinstance(readyBis[1], Line) and activeBis[0]._eq(readyBis[1])))
+         or
+         (isinstance(activeBis[0], Point) and (isinstance(readyBis[0], Point) and activeBis[0]._eq(readyBis[0])
+                                                  or isinstance(readyBis[1], Point) and activeBis[0]._eq(readyBis[1]))))
+        and
+        ((isinstance(activeBis[1], Line) and (isinstance(readyBis[0], Line) and activeBis[1]._eq(readyBis[0])
+                                                 or isinstance(readyBis[1], Line) and activeBis[1]._eq(readyBis[1])))
+         or
+         (isinstance(activeBis[1], Point) and (isinstance(readyBis[0], Point) and activeBis[1]._eq(readyBis[0])
+                                                  or isinstance(readyBis[1], Point) and activeBis[1]._eq(readyBis[1]))))):
+        return True
+    else: return False
 
 def getPoints(p):
     points = []
@@ -399,10 +416,11 @@ def orderSites(lines,sites):
     for site in sites:
         for i in range(len(lines)):
         
-            if ((isinstance(site[1],Line) and 
-                site[1].p0._eq(lines[i].p0) and site[1].p1._eq(lines[i].p1)) 
-                or 
-                (isinstance(site[1],Point) and site[1]._eq(lines[i].p1))):
+            if ((isinstance(site[1],Point) and site[1]._eq(lines[i].p1))
+                or
+                (isinstance(site[1],Line) and 
+                not (site[1].p0._eq(lines[i].p0) or site[1].p1._eq(lines[i].p1))) 
+                ):
                 tempList.append(site) 
                 break      
     return tempList
@@ -412,7 +430,8 @@ def orderSites(lines,sites):
 def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
     node = []
     virtualNode = []
-    node.append([[],activeBis[0][0].ccopy()])
+    flag = True
+    node.append([[],activeBis[0][1].ccopy()])
     aPoint = activeBis[0][2].ccopy()
     if segment:
         minDistNodes = Line(projectionC(segment,aPoint),projectionC(segment,tempNodes[0][0])).dist_points()
@@ -422,14 +441,22 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
             if math.fabs(minDistNodes - Line(projectionC(segment,aPoint),projectionC(segment,nodes[0])).dist_points()) < 0.005:
                 node.append(nodes)
                 
-                if isinstance(activeBis[0][0], Line) and isinstance(activeBis[0][1], Line):
-                    skeletNodes.append([aPoint, node[1][0]])
-                else:
+        if isinstance(activeBis[0][0], Line) and isinstance(activeBis[0][1], Line):
+                    for skeleton in skeletNodes:
+                        if inList([aPoint, node[1][0]], skeleton) or node[1][0]._eq(aPoint) :
+                            flag = False
+                            break
+                    if flag: skeletNodes.append([aPoint, node[1][0]])
+        else:
                     virtualNode.append(centreOfFirstCase([paramSystemV(coordVectors([point for point in activeBis[0] if isinstance(point, Point)][0],
                                                                                     [projectionC(segment,aPoint),
                                                                                      projectionC(segment, nodes[0])]),
                                                                        aPoint, nodes[0])]))
-                    skeletNodes.append([aPoint, Point(virtualNode[0][0],virtualNode[0][1]), node[1][0]])
+                    for skeleton in skeletNodes:
+                        if inList([aPoint, node[1][0]], skeleton) or node[1][0]._eq(aPoint):
+                            flag = False
+                            break
+                    if flag: skeletNodes.append([aPoint, Point(virtualNode[0][0],virtualNode[0][1]), node[1][0]])
     else:
         minDistNodes = Line(aPoint,tempNodes[0][0]).dist_points()
         for nodes in tempNodes:
@@ -437,8 +464,13 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
         for nodes in tempNodes:
             if math.fabs(minDistNodes - Line(aPoint,nodes[0]).dist_points()) < 0.005:
                 node.append(nodes)
-        skeletNodes.append([aPoint, node[1][0]])
-    node.append([[],activeBis[0][1].ccopy()])
+        
+        for skeleton in skeletNodes:
+            if inList([aPoint, node[1][0]], skeleton) or node[1][0]._eq(aPoint):
+                flag = False
+                break
+        if flag: skeletNodes.append([aPoint, node[1][0]])
+    node.append([[],activeBis[0][0].ccopy()])
 
     # reverse node-list in order touch sites circle from left active bisector
     # to right active bisector
@@ -446,8 +478,8 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
         del node[0]
         del node[-1]
         node = orderSites(lines,node)
-        node.insert(0,[[],activeBis[0][0].ccopy()])
-        node.append([[],activeBis[0][1].ccopy()])
+        node.insert(0,[[],activeBis[0][1].ccopy()])
+        node.append([[],activeBis[0][0].ccopy()])
     
     readyBisector.append([activeBis[0][0].ccopy(),activeBis[0][1].ccopy()])
     for i in range(3): activeBis[0].remove(activeBis[0][0])
@@ -469,15 +501,27 @@ def Skeletonization(term, Lines, Points):
     readyBisector = []
     skeletNodes = []
     skeletNodes.append([ [], term])
+    
     while activeBis:
-        if not [activeBis[0] for readyBis in readyBisector if (activeBis[0][0] in readyBis) and (activeBis[0][1] in readyBis)]:
+        fflag = True
+        for readyBis in readyBisector:
+            if inList(activeBis[0], readyBis):
+                fflag = False
+                break
+        if fflag:
 
             if isinstance(activeBis[0][0], Line) and isinstance(activeBis[0][1], Line):
                 
-                tempNode = activeBis[0][0]._in(activeBis[0][1])
+                tempNode = activeBis[0][0]._inter(activeBis[0][1])
                 
-                if tempNode and not tempNode._eq(activeBis[0][2]):
-                    skeletNodes.append([activeBis[0][2].ccopy(), tempNode])
+                if tempNode and not tempNode._eq(activeBis[0][2]) :
+                    flag = True
+                    for skeleton in skeletNodes:
+                        if  inList([activeBis[0][2], tempNode], skeleton) or tempNode._eq(activeBis[0][2]):
+                            flag = False
+                            break
+                    if flag: skeletNodes.append([activeBis[0][2].ccopy(), tempNode])
+                    
                     readyBisector.append([activeBis[0][0].ccopy(), activeBis[0][1].ccopy()])
                     for i in range(3): activeBis[0].remove(activeBis[0][0])
                     activeBis.remove(activeBis[0])
@@ -495,13 +539,13 @@ def Skeletonization(term, Lines, Points):
                                         node = []
                                         node.append([testingCentre(xc, activeBis[0][0]),testingCentre(xc, activeBis[0][1])])
 
-                                        if ((node[0][0] and node[0][1]) and comparePoints(node[0][0], activeBis[0][2], 0.02)
-                                            and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ] 
+                                        if ((node[0][0] and node[0][1])  #and comparePoints(node[0][0], activeBis[0][2], 0.02)
+                                             #and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ] 
                                             and testingIntersections(node[0][0], [], T, Lines, Points)):
                                             tempNodes.append([node[0][0], T])
                                             break
                     for T in Lines:
-                        if (not T in activeBis[0] ):
+                        if not (T._eq(activeBis[0][0]) or T._eq(activeBis[0][1]) ):
 
                             Xc = centreOfFirstCase(paramOf3Lines(T.paramOfLine(), activeBis[0][0].paramOfLine(), activeBis[0][1].paramOfLine()))
 
@@ -511,8 +555,8 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, activeBis[0][0]), testingCentre(xc, activeBis[0][1]), testingCentre(xc, T)])
                        
-                                    if ((node[0][0] and node[0][1] and node[0][2]) and comparePoints(node[0][0], activeBis[0][2], 0.02)
-                                    and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ] 
+                                    if ((node[0][0] and node[0][1] and node[0][2])  #and comparePoints(node[0][0], activeBis[0][2], 0.02)
+                                     #and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ] 
                                     and testingIntersections(node[0][0], activeBis[0][0], [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                     if tempNodes:
@@ -526,9 +570,9 @@ def Skeletonization(term, Lines, Points):
                     if (not T._eq(activeBis[0][0]) and not T._eq(activeBis[0][1]) and not [g for g in range(len(skeletNodes)) if T._eq(skeletNodes[g][-1])]):
                          Xc = centreOfFirstCase(paramOf3Points(activeBis[0][0],activeBis[0][1], T))
                          Xc = Point(Xc[0],Xc[1])
-                         if (comparePoints(Xc, activeBis[0][2],0.02)
-                             and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.02) ] 
-                             and testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
+                         if (# comparePoints(Xc, activeBis[0][2],0.02)
+                             # and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.02) ] and 
+                             testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
                              tempNodes.append([Xc, T])
                 for T in Lines:
                     Xc = centreOfSecondCase(paramA2(activeBis[0][0], activeBis[0][1]),
@@ -538,8 +582,8 @@ def Skeletonization(term, Lines, Points):
                         for xc in Xc :
                             xc = Point(xc[0],xc[1])
                             node = testingCentre(xc, T)
-                            if (node and comparePoints(node, activeBis[0][2], 0.02)
-                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ]
+                            if (node#  and comparePoints(node, activeBis[0][2], 0.02)
+                                 #and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
                                 and testingIntersections(node, [], activeBis[0][0], Lines, Points)):
                                 tempNodes.append([node, T])
                                 break
@@ -557,7 +601,7 @@ def Skeletonization(term, Lines, Points):
                 else:
                     point = activeBis[0][1]
                     line = activeBis[0][0]
-                if not Line(point,point)._in(line):
+                if not Line(point,point)._inter(line):
                     tempNodes = []
                     for T in Points:
                         if (not T._eq(point) and not [j for j in range(len(skeletNodes)) if T._eq(skeletNodes[j][-1])]):
@@ -569,13 +613,13 @@ def Skeletonization(term, Lines, Points):
                                 for xc in Xc :
                                     xc = Point(xc[0],xc[1])
                                     node = testingCentre(xc, line)
-                                    if (node and comparePoints(node, activeBis[0][2],0.02)
-                                             and not[k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ]
+                                    if (node  #and comparePoints(node, activeBis[0][2],0.02)
+                                              #and not[k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ]
                                              and testingIntersections(node, [], T, Lines, Points)):
                                         tempNodes.append([node, T])
                                         break
                     for T in Lines:
-                        if not T.p0._eq(line.p0) and not T.p1._eq(line.p1):
+                        if  not T._eq(line):
                             Xc = centreOfSecondCase(paramA1(line.paramOfLine(), T.paramOfLine()),
                                                     paramC(paramA1(line.paramOfLine(), T.paramOfLine()),
                                                            paramB(T, line, point)))
@@ -585,8 +629,8 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, line), testingCentre(xc, T)])
                                     if (node[0][0] and node[0][1]
-                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
-                                        and comparePoints(node[0][0], activeBis[0][2],0.02)
+                                        # and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
+                                        # and comparePoints(node[0][0], activeBis[0][2],0.02)
                                         and testingIntersections(node[0][0], T, [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                                         break
@@ -660,7 +704,7 @@ class Skeleton(inkex.Effect):
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
             node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
-'''    
+'''  
         else:
             L = concavePolygon(List)
             for id, node in self.selected.iteritems():
@@ -683,4 +727,4 @@ if __name__ == '__main__':
     e.affect() 
 
 
-#print(AbsPath(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))))))
+print(AbsPath(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))))))
