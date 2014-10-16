@@ -125,7 +125,27 @@ def termNode(points):
                 return temp[i]
     else :
         return temp[0]
-        
+
+# antiterminal point
+# points = getPoints(p)
+def atermNode(points):
+    maxXi = max(points[0].x,points[1].x)
+    for i in range(2, len(points)):
+        maxXi = max(maxXi,points[i].x)
+    temp = []
+    for i in range(len(points)):
+        if (points[i].x == maxXi):
+            temp.append(points[i])
+    if (len(temp) != 1) :
+        minYi = temp[0].y
+        for i in range(1,len(temp)) :
+            minYi = min(minYi, temp[i].y)
+        for i in range(len(temp)):
+            if (minYi == temp[i].y):
+                return temp[i]
+    else :
+        return temp[0]        
+
 #  the direction of traversal of a path
 def traversePath(p0, p1, p2):
     if ((p1.x - p0.x)*(p2.y - p1.y) < (p1.y - p0.y)*(p2.x - p1.x)):
@@ -639,6 +659,73 @@ def AbsPath(sk):
             a.append(['C', [sk[i][1].x,sk[i][1].y] + [sk[i][2].x,sk[i][2].y] + [sk[i][2].x,sk[i][2].y]])
     return a
 
+#the intersection of polygons
+def poligonIntersection(Lines0, Lines1):
+
+    for i in range(len(Lines0)-1):
+        for k in range(len(Lines1)-1):
+            Z0 = (Lines1[k].p0.x - Lines0[i].p0.x)*(Lines0[i].p1.y - Lines0[i].p0.y)
+            Z0 -= (Lines1[k].p0.y - Lines0[i].p0.y)*(Lines0[i].p1.x - Lines0[i].p0.x)
+            Z1 = (Lines1[k].p1.x - Lines0[i].p0.x)*(Lines0[i].p1.y - Lines0[i].p0.y)
+            Z1 -= (Lines1[k].p1.y - Lines0[i].p0.y)*(Lines0[i].p1.x - Lines0[i].p0.x)
+            Z2 = (Lines0[i].p0.x - Lines1[k].p0.x)*(Lines1[k].p1.y - Lines1[k].p0.y)
+            Z2 -= (Lines0[i].p0.y - Lines1[k].p0.y)*(Lines1[k].p1.x - Lines1[k].p0.x)
+            Z3 = (Lines0[i].p1.x - Lines1[k].p0.x)*(Lines1[k].p1.y - Lines1[k].p0.y)
+            Z3 -= (Lines0[i].p1.y - Lines1[k].p0.y)*(Lines1[k].p1.x - Lines1[k].p0.x)
+            if Z0*Z1<0 and Z2*Z3<0:
+                return True
+            if Z0*Z1 ==0 and Z2*Z3==0:
+                if (max(min(Lines0[i].p0.x,Lines0[i].p1.x),min(Lines1[k].p0.x,Lines1[k].p1.x)) < 
+                    min(max(Lines0[i].p0.x,Lines0[i].p1.x), max(Lines1[k].p0.x,Lines1[k].p1.x))):
+                    return True
+
+    return False
+
+# mutual arrangement of polygons
+def arrPolygons(termPoints, atermPoints, poligonInter):
+    if not poligonInter: #not intersection
+        if not(termPoints[0].x > termPoints[1].x or atermPoints[0].x < atermPoints[1].x):
+            return True #inside
+        else: return False #outside
+    else: return False # intersection
+
+
+def qsort(L):
+    if L: return qsort([x for x in L[1:] if x<L[0]]) + L[0:1] + qsort([x for x in L[1:] if x>=L[0]])
+    return []
+
+def sortLists(List):
+    resultList = []
+    list = []
+    for i in range(len(List)):
+        list.append(List[i][0].x)
+    list = qsort(list)
+    for k in range(len(List)):
+        if list[k] == List[k][0].x:
+            resultList.append(List[k])
+    return resultList
+
+    
+
+# merging lists of Poligonal segments
+def mergeLists(List):
+    resultList = []
+    list = sortLists(List)
+    for i in range(len(List)-1):
+        if not poligonIntersection(List[i][1], List[i+1][1]):
+            if (List[i][0].x < List[i+1][0].x 
+                and List[i][3].x > List[i+1][3].x):
+                List[i+1][1].reverse()
+                for k in range(len(List[i+1][1])):
+                    List[i+1][1][k].reverse()
+                resultList.append([List[i][0],List[i][1] + List[i+1][1], List[i][2] + List[i+1][2]])
+            else:
+                resultList.append([List[i][0],List[i][1], List[i][2]])
+                resultList.append([List[i+1][0],List[i+1][1],List[i+1][2]])
+    return resultList
+
+
+
 class Skeleton(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
@@ -675,7 +762,7 @@ class Skeleton(inkex.Effect):
                 Id=id
                 p = cubicsuperpath.parsePath(node.get('d'))
                 inkex.debug("nodes: %s" % p)
-                List.append([termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))])
+                List.append([termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))), atermNode(getPoints(p[0])) ])
         
         if len(List) == 1:
             self.patternNode=self.selected[Id]
@@ -685,24 +772,24 @@ class Skeleton(inkex.Effect):
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
             node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
-'''    
+    
         else:
-            L = concavePolygon(List)
+            L = mergeLists(List)
             for id, node in self.selected.iteritems():
                 if node.tag == inkex.addNS('path','svg'):
                     p = cubicsuperpath.parsePath(node.get('d'))
-                    n=-1
-                    for l in range(len(L)):
-                        if termNode(p[0]) in [L[l][0]]: n=l
-                    if n!=-1:
-                        self.patternNode=self.selected[id]
-                        self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
-                        self.patternNode.getparent().append(self.gNode)
-                        if self.options.copymode:
-                            duplist=self.duplicateNodes({id:self.patternNode})
-                            self.patternNode = duplist.values()[0]
+                    #n=-1
+                    #for l in range(len(L)):
+                    #    if termNode(p[0]) in [L[l][0]]: n=l
+                    #if n!=-1:
+                    self.patternNode=self.selected[id]
+                    self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
+                    self.patternNode.getparent().append(self.gNode)
+                    if self.options.copymode:
+                        duplist=self.duplicateNodes({id:self.patternNode})
+                        self.patternNode = duplist.values()[0]
 
-'''
+
 if __name__ == '__main__':
     e = Skeleton()
     e.affect() 
