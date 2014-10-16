@@ -713,8 +713,7 @@ def mergeLists(List):
     list = sortLists(List)
     for i in range(len(List)-1):
         if not poligonIntersection(List[i][1], List[i+1][1]):
-            if (List[i][0].x < List[i+1][0].x 
-                and List[i][3].x > List[i+1][3].x):
+            if (arrPolygons([List[i][0],List[i+1][0]], [List[i][-1],List[i+1][-1]], poligonIntersection(List[i][1], List[i+1][1]))):
                 List[i+1][1].reverse()
                 for k in range(len(List[i+1][1])):
                     List[i+1][1][k].reverse()
@@ -788,6 +787,7 @@ class Skeleton(inkex.Effect):
                     if self.options.copymode:
                         duplist=self.duplicateNodes({id:self.patternNode})
                         self.patternNode = duplist.values()[0]
+                    node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[0][0],L[0][1],L[0][2]))))
 
 
 if __name__ == '__main__':
