@@ -35,10 +35,7 @@ class Point(object):
         else: return False
     def ccopy(self):
         return Point(self.x, self.y)
-    def _reverse(self, other):
-        t = self
-        self = other
-        other = t
+    
 
 class GroupPoint(object):
     def __init__(self, point):
@@ -75,10 +72,10 @@ class Line(object):
         if self.p0._eq(line.p0) and self.p1._eq(line.p1):
             return True
         else: return False
-    def _reverse(self, other):
-        t = self
-        self = other
-        other = t
+    def _reverse(self):
+        t = self.p0
+        self.p0 = self.p1
+        self.p1 = t
     
 def inList(activeBis, readyBis):
     if (((isinstance(activeBis[0], Line) and (isinstance(readyBis[0], Line) and activeBis[0]._eq(readyBis[0])
@@ -743,13 +740,14 @@ def qsort(L):
 
 def sortLists(List):
     resultList = []
-    list = []
+    llist = []
     for i in range(len(List)):
-        list.append(List[i][0].x)
-    list = qsort(list)
+        llist.append(List[i][0].x)
+    llist = qsort(llist)
     for k in range(len(List)):
-        if list[k] == List[k][0].x:
-            resultList.append(List[k])
+	for m in range(len(llist)):
+            if math.fabs(llist[k] - List[m][0].x)<0.000001:
+                resultList.append(List[m])
     return resultList
 
 def getExternalAngles(lines, concaveAngles):
@@ -767,7 +765,7 @@ def getExternalAngles(lines, concaveAngles):
 # merging lists of Poligonal segments
 def mergeLists(List):
     resultList = []
-    for i in range(len(sortList(List))): resultList.append(sortList(List)[i])
+    for i in range(len(sortLists(List))): resultList.append(sortLists(List)[i])
     n = len(resultList)
     i = 0
     while i != n-1 :
@@ -776,11 +774,13 @@ def mergeLists(List):
                            [resultList[i][4], resultList[i+1][4]], [resultList[i][5], resultList[i+1][5]]):
                 #reverse segments
                 resultList[i+1][1].reverse()
-                for k in range(len(resultList[i+1][1])): resultList[i+1][1][k].p0._reverse(resultList[i+1][1][k].p1)
+		
+                for k in range(len(resultList[i+1][1])): resultList[i+1][1][k]._reverse()
                 #external angles
                 temp = []
                 temp.append(getExternalAngles(resultList[i+1][1], resultList[i+1][2]))
-                resultList[i+1][2].clear()
+                resultList[i+1].remove(resultList[i+1][2])
+		resultList[i+1].insert(2,[])
                 for l in range(len(temp[0])):
                     resultList[i+1][2].append(temp[0][l])
                 #merge i-list and i+1-list
@@ -788,13 +788,15 @@ def mergeLists(List):
                     resultList[i][1].append(resultList[i+1][1][j])
                 for p in range(len(resultList[i+1][2])):
                     resultList[i][2].append(resultList[i+1][2][p])
-                resultList[i+1].clear()
+                resultList.remove(resultList[i+1])
+		
                 i = 0
             
             else:
                 i += 1
+	
         else:
-            resultList[i].clear()
+            resultList.remove(resultList[i])
             i = 0
         n = len(resultList)
     return resultList
