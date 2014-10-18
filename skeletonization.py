@@ -745,7 +745,7 @@ def sortLists(List):
         llist.append(List[i][0].x)
     llist = qsort(llist)
     for k in range(len(List)):
-	for m in range(len(llist)):
+        for m in range(len(llist)):
             if math.fabs(llist[k] - List[m][0].x)<0.000001:
                 resultList.append(List[m])
     return resultList
@@ -773,28 +773,25 @@ def mergeLists(List):
             if arrPolygons([resultList[i][0], resultList[i+1][0]], [resultList[i][3], resultList[i+1][3]], 
                            [resultList[i][4], resultList[i+1][4]], [resultList[i][5], resultList[i+1][5]]):
                 #reverse segments
-                resultList[i+1][1].reverse()
-		
-                for k in range(len(resultList[i+1][1])): resultList[i+1][1][k]._reverse()
-                #external angles
-                temp = []
-                temp.append(getExternalAngles(resultList[i+1][1], resultList[i+1][2]))
-                resultList[i+1].remove(resultList[i+1][2])
-		resultList[i+1].insert(2,[])
-                for l in range(len(temp[0])):
-                    resultList[i+1][2].append(temp[0][l])
-                #merge i-list and i+1-list
-                for j in range(len(resultList[i+1][1])):
-                    resultList[i][1].append(resultList[i+1][1][j])
-                for p in range(len(resultList[i+1][2])):
-                    resultList[i][2].append(resultList[i+1][2][p])
-                resultList.remove(resultList[i+1])
-		
-                i = 0
+                    resultList[i+1][1].reverse()
+                    for k in range(len(resultList[i+1][1])): resultList[i+1][1][k]._reverse()
+                    #external angles
+                    temp = []
+                    temp.append(getExternalAngles(resultList[i+1][1], resultList[i+1][2]))
+                    resultList[i+1].remove(resultList[i+1][2])
+                    resultList[i+1].insert(2,[])
+                    for l in range(len(temp[0])):
+                        resultList[i+1][2].append(temp[0][l])
+                    #merge i-list and i+1-list
+                    for j in range(len(resultList[i+1][1])):
+                        resultList[i][1].append(resultList[i+1][1][j])
+                    for p in range(len(resultList[i+1][2])):
+                        resultList[i][2].append(resultList[i+1][2][p])
+                    resultList.remove(resultList[i+1])
+                    i = 0
             
             else:
                 i += 1
-	
         else:
             resultList.remove(resultList[i])
             i = 0
