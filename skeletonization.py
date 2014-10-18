@@ -366,7 +366,7 @@ def paramB(line1,line2, point):
         point1 = centreOfFirstCase(C1)
         x = point0[0]+point1[0]
         y = point0[1]+point1[1]
-        R = Line(Point(x,y),point0).dist_points()
+        R = Line(Point(x,y),Point(point0[0],point0[1])).dist_points()
         return [1,
                 -x,
                 1,
