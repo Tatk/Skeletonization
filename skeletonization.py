@@ -35,6 +35,10 @@ class Point(object):
         else: return False
     def ccopy(self):
         return Point(self.x, self.y)
+    def _reverse(self, other):
+        t = self
+        self = other
+        other = t
 
 class GroupPoint(object):
     def __init__(self, point):
@@ -71,6 +75,10 @@ class Line(object):
         if self.p0._eq(line.p0) and self.p1._eq(line.p1):
             return True
         else: return False
+    def _reverse(self, other):
+        t = self
+        self = other
+        other = t
     
 def inList(activeBis, readyBis):
     if (((isinstance(activeBis[0], Line) and (isinstance(readyBis[0], Line) and activeBis[0]._eq(readyBis[0])
@@ -107,7 +115,7 @@ def getGroupPoints(p):
 
 # terminal point
 # points = getPoints(p)
-
+# X MIN
 def termNode(points):
     minXi = min(points[0].x,points[1].x)
     for i in range(2, len(points)):
@@ -128,6 +136,7 @@ def termNode(points):
 
 # antiterminal point
 # points = getPoints(p)
+# X MAX
 def atermNode(points):
     maxXi = max(points[0].x,points[1].x)
     for i in range(2, len(points)):
@@ -145,6 +154,44 @@ def atermNode(points):
                 return temp[i]
     else :
         return temp[0]        
+
+# Y MAX
+def ayTermNode(points):
+    maxYi = max(points[0].y,points[1].y)
+    for i in range(2, len(points)):
+        maxYi = max(maxYi,points[i].y)
+    temp = []
+    for i in range(len(points)):
+        if (points[i].y == maxYi):
+            temp.append(points[i])
+    if (len(temp) != 1) :
+        minXi = temp[0].x
+        for i in range(1,len(temp)) :
+            minXi = min(minXi, temp[i].x)
+        for i in range(len(temp)):
+            if (minXi == temp[i].x):
+                return temp[i]
+    else :
+        return temp[0] 
+
+# Y MIN
+def yTermNode(points):
+    minYi = min(points[0].y,points[1].y)
+    for i in range(2, len(points)):
+        minYi = min(minYi,points[i].y)
+    temp = []
+    for i in range(len(points)):
+        if (points[i].y == minYi):
+            temp.append(points[i])
+    if (len(temp) != 1) :
+        minXi = temp[0].x
+        for i in range(1,len(temp)) :
+            minXi = min(minXi, temp[i].x)
+        for i in range(len(temp)):
+            if (minXi == temp[i].x):
+                return temp[i]
+    else :
+        return temp[0]
 
 #  the direction of traversal of a path
 def traversePath(p0, p1, p2):
@@ -660,6 +707,7 @@ def AbsPath(sk):
     return a
 
 #the intersection of polygons
+# true if intersection of poligons exist
 def poligonIntersection(Lines0, Lines1):
 
     for i in range(len(Lines0)-1):
@@ -682,14 +730,13 @@ def poligonIntersection(Lines0, Lines1):
     return False
 
 # mutual arrangement of polygons
-def arrPolygons(termPoints, atermPoints, poligonInter):
-    if not poligonInter: #not intersection
-        if not(termPoints[0].x > termPoints[1].x or atermPoints[0].x < atermPoints[1].x):
-            return True #inside
-        else: return False #outside
-    else: return False # intersection
+def arrPolygons(termPoints, atermPoints, yTermPoints, ayTermPoints):
+    if not(termPoints[0].x > termPoints[1].x or atermPoints[0].x < atermPoints[1].x
+           or yTermPoints[0].y > yTermPoints[1].y or ayTermPoints[0].y < ayTermPoints[1].y):
+        return True #inside
+    else: return False #outside
 
-
+# sort of termNode
 def qsort(L):
     if L: return qsort([x for x in L[1:] if x<L[0]]) + L[0:1] + qsort([x for x in L[1:] if x>=L[0]])
     return []
@@ -720,20 +767,36 @@ def getExternalAngles(lines, concaveAngles):
 # merging lists of Poligonal segments
 def mergeLists(List):
     resultList = []
-    list = sortLists(List)
-    for i in range(len(List)-1):
-        if not poligonIntersection(List[i][1], List[i+1][1]):
-            if (arrPolygons([List[i][0],List[i+1][0]], [List[i][-1],List[i+1][-1]], poligonIntersection(List[i][1], List[i+1][1]))):
-                List[i+1][1].reverse()
-                for k in range(len(List[i+1][1])):
-                    t = List[i+1][1][k].p0.ccopy()
-                    List[i+1][1][k].p0 = List[i+1][1][k].p1.ccopy()
-                    List[i+1][1][k].p1 = t
-                    
-                resultList.append([List[i][0],List[i][1] + List[i+1][1], List[i][2] + getExternalAngles(List[i+1][1],List[i+1][2])])
+    for i in range(len(sortList(List))): resultList.append(sortList(List)[i])
+    n = len(resultList)
+    i = 0
+    while i != n-1 :
+        if not poligonIntersection(resultList[i][1], resultList[i+1][1]):
+            if arrPolygons([resultList[i][0], resultList[i+1][0]], [resultList[i][3], resultList[i+1][3]], 
+                           [resultList[i][4], resultList[i+1][4]], [resultList[i][5], resultList[i+1][5]]):
+                #reverse segments
+                resultList[i+1][1].reverse()
+                for k in range(len(resultList[i+1][1])): resultList[i+1][1][k].p0._reverse(resultList[i+1][1][k].p1)
+                #external angles
+                temp = []
+                temp.append(getExternalAngles(resultList[i+1][1], resultList[i+1][2]))
+                resultList[i+1][2].clear()
+                for l in range(len(temp[0])):
+                    resultList[i+1][2].append(temp[0][l])
+                #merge i-list and i+1-list
+                for j in range(len(resultList[i+1][1])):
+                    resultList[i][1].append(resultList[i+1][1][j])
+                for p in range(len(resultList[i+1][2])):
+                    resultList[i][2].append(resultList[i+1][2][p])
+                resultList[i+1].clear()
+                i = 0
+            
             else:
-                resultList.append([List[i][0],List[i][1], List[i][2]])
-                resultList.append([List[i+1][0],List[i+1][1],List[i+1][2]])
+                i += 1
+        else:
+            resultList[i].clear()
+            i = 0
+        n = len(resultList)
     return resultList
 
 
@@ -774,7 +837,8 @@ class Skeleton(inkex.Effect):
                 Id=id
                 p = cubicsuperpath.parsePath(node.get('d'))
                 inkex.debug("nodes: %s" % p)
-                List.append([termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))), atermNode(getPoints(p[0])) ])
+                List.append([termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))), 
+                             atermNode(getPoints(p[0])), yTermNode(getPoints(p[0])), ayTermNode(getPoints(p[0])) ])
         
         if len(List) == 1:
             self.patternNode=self.selected[Id]
@@ -787,20 +851,21 @@ class Skeleton(inkex.Effect):
     
         else:
             L = mergeLists(List)
-            for id, node in self.selected.iteritems():
-                if node.tag == inkex.addNS('path','svg'):
-                    p = cubicsuperpath.parsePath(node.get('d'))
-                    n=-1
-                    for l in range(len(L)):
-                        if termNode(getPoints(p[0]))._eq(L[l][0]): n=l
-                    if n!=-1:
-                        self.patternNode=self.selected[id]
-                        self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
-                        self.patternNode.getparent().append(self.gNode)
-                        if self.options.copymode:
-                            duplist=self.duplicateNodes({id:self.patternNode})
-                            self.patternNode = duplist.values()[0]
-                        node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+            #for id, node in self.selected.iteritems():
+            #    if node.tag == inkex.addNS('path','svg'):
+            #        p = cubicsuperpath.parsePath(node.get('d'))
+            #        n=-1
+            #        for l in range(len(L)):
+            #            if termNode(getPoints(p[0]))._eq(L[l][0]): n=l
+            #        if n!=-1:
+            #            self.patternNode=self.selected[id]
+            #            self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
+            #            self.patternNode.getparent().append(self.gNode)
+            #            if self.options.copymode:
+            #                duplist=self.duplicateNodes({id:self.patternNode})
+            #                self.patternNode = duplist.values()[0]
+            for n in range(len(L)): 
+                node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
 
 
 if __name__ == '__main__':
