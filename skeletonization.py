@@ -769,33 +769,41 @@ def mergeLists(List):
     n = len(resultList)
     i = 0
     while i != n-1 :
-        if not poligonIntersection(resultList[i][1], resultList[i+1][1]):
+        
             if arrPolygons([resultList[i][0], resultList[i+1][0]], [resultList[i][3], resultList[i+1][3]], 
                            [resultList[i][4], resultList[i+1][4]], [resultList[i][5], resultList[i+1][5]]):
-                #reverse segments
-                    resultList[i+1][1].reverse()
-                    for k in range(len(resultList[i+1][1])): resultList[i+1][1][k]._reverse()
+
+                concavePolygonList = []
+                for m in range(i+2, n):
+                    if (arrPolygons([resultList[i][0], resultList[m][0]], [resultList[i][3], resultList[m][3]],
+                                    [resultList[i][4], resultList[m][4]], [resultList[i][5], resultList[m][5]])
+                        and
+                        not arrPolygons([resultList[i+1][0], resultList[m][0]], [resultList[i+1][3], resultList[m][3]],
+                                        [resultList[i+1][4], resultList[m][4]], [resultList[i+1][5], resultList[m][5]])):
+                        concavePolygonList.append(resultList[m])
+                concavePolygonList.append(resultList[i+1])
+                for x in range(len(concavePolygonList)):
+                    #reverse segments
+                    concavePolygonList[x][i+1][1].reverse()
+                    for k in range(len(concavePolygonList[x][1])): concavePolygonList[x][1][k]._reverse()
                     #external angles
                     temp = []
-                    temp.append(getExternalAngles(resultList[i+1][1], resultList[i+1][2]))
-                    resultList[i+1].remove(resultList[i+1][2])
-                    resultList[i+1].insert(2,[])
+                    temp.append(getExternalAngles(concavePolygonList[x][1], concavePolygonList[x][2]))
+                    concavePolygonList[x].remove(concavePolygonList[x][2])
+                    concavePolygonList[x].insert(2,[])
                     for l in range(len(temp[0])):
-                        resultList[i+1][2].append(temp[0][l])
+                        concavePolygonList[x][2].append(temp[0][l])
                     #merge i-list and i+1-list
-                    for j in range(len(resultList[i+1][1])):
-                        resultList[i][1].append(resultList[i+1][1][j])
-                    for p in range(len(resultList[i+1][2])):
-                        resultList[i][2].append(resultList[i+1][2][p])
-                    resultList.remove(resultList[i+1])
-                    i = 0
+                    for j in range(len(concavePolygonList[x][1])):
+                        resultList[i][1].append(concavePolygonList[x][1][j])
+                    for p in range(len(concavePolygonList[x][2])):
+                        resultList[i][2].append(concavePolygonList[x][2][p])
+                    resultList.remove(concavePolygonList[x])
+                i = 0
             
             else:
                 i += 1
-        else:
-            resultList.remove(resultList[i])
-            i = 0
-        n = len(resultList)
+        
     return resultList
 
 
