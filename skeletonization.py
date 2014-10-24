@@ -784,7 +784,7 @@ def mergeLists(List):
                 concavePolygonList.append(resultList[i+1])
                 for x in range(len(concavePolygonList)):
                     #reverse segments
-                    concavePolygonList[x][i+1][1].reverse()
+                    concavePolygonList[x][1].reverse()
                     for k in range(len(concavePolygonList[x][1])): concavePolygonList[x][1][k]._reverse()
                     #external angles
                     temp = []
@@ -803,7 +803,7 @@ def mergeLists(List):
             
             else:
                 i += 1
-        
+            n = len(resultList)
     return resultList
 
 
@@ -858,21 +858,22 @@ class Skeleton(inkex.Effect):
     
         else:
             L = mergeLists(List)
-            #for id, node in self.selected.iteritems():
-            #    if node.tag == inkex.addNS('path','svg'):
-            #        p = cubicsuperpath.parsePath(node.get('d'))
-            #        n=-1
-            #        for l in range(len(L)):
-            #            if termNode(getPoints(p[0]))._eq(L[l][0]): n=l
-            #        if n!=-1:
-            #            self.patternNode=self.selected[id]
-            #            self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
-            #            self.patternNode.getparent().append(self.gNode)
-            #            if self.options.copymode:
-            #                duplist=self.duplicateNodes({id:self.patternNode})
-            #                self.patternNode = duplist.values()[0]
-            for n in range(len(L)): 
-                node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+            for id, node in self.selected.iteritems():
+                if node.tag == inkex.addNS('path','svg'):
+                    p = cubicsuperpath.parsePath(node.get('d'))
+                    n=-1
+                    for l in range(len(L)):
+                        if termNode(getPoints(p[0]))._eq(L[l][0]): n=l
+                    if n!=-1:
+                        self.patternNode=self.selected[id]
+                        self.gNode = etree.Element('{http://www.w3.org/2000/svg}g')
+                        self.patternNode.getparent().append(self.gNode)
+                        if self.options.copymode:
+                            duplist=self.duplicateNodes({id:self.patternNode})
+                            self.patternNode = duplist.values()[0]
+            #for n in range(len(L)): 
+                        node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+		        inkex.debug("n: %s" % n)
 
 
 if __name__ == '__main__':
