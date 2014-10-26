@@ -23,7 +23,8 @@ import math
 import re
 import random
 
-#p = [[[[437.14285, 569.50502], [437.14285, 569.50502], [437.14285, 569.50502]], [[306.61912, 540.82636], [306.61912, 540.82636], [306.61912, 540.82636]], [[208.99842, 632.09033], [208.99842, 632.09033], [208.99842, 632.09033]], [[195.9394, 499.09268], [195.9394, 499.09268], [195.9394, 499.09268]], [[78.975759, 434.452], [78.975759, 434.452], [78.975759, 434.452]], [[201.42857, 380.9336], [201.42857, 380.9336], [201.42857, 380.9336]], [[226.76176, 249.7195], [226.76176, 249.7195], [226.76176, 249.7195]], [[315.50079, 349.64095], [315.50079, 349.64095], [315.50079, 349.64095]], [[448.1212, 333.18686], [448.1212, 333.18686], [448.1212, 333.18686]], [[380.51212, 448.46011], [380.51212, 448.46011], [380.51212, 448.46011]], [[437.14285, 569.50502], [437.14285, 569.50502], [437.14285, 569.50502]]]]
+#p0 = [[[[117.14286, 358.07648], [117.14286, 358.07648], [117.14286, 358.07648]], [[588.57142, 358.07648], [588.57142, 358.07648], [588.57142, 358.07648]], [[588.57142, 580.93362], [588.57142, 580.93362], [588.57142, 580.93362]], [[117.14285999999998, 580.93362], [117.14285999999998, 580.93362], [117.14285999999998, 580.93362]], [[117.14286, 358.07648], [117.14286, 358.07648], [117.14286, 358.07648]]]]
+#p1 = [[[[171.42857, 432.36218], [171.42857, 432.36218], [171.42857, 432.36218]], [[274.28571, 432.36218], [274.28571, 432.36218], [274.28571, 432.36218]], [[274.28571, 515.21932], [274.28571, 515.21932], [274.28571, 515.21932]], [[171.42856999999998, 515.21932], [171.42856999999998, 515.21932], [171.42856999999998, 515.21932]], [[171.42857, 432.36218], [171.42857, 432.36218], [171.42857, 432.36218]]]]
 
 class Point(object):
     def __init__(self, x, y):
@@ -346,6 +347,7 @@ def paramA2(p0, p1):
 
 def paramB(line1,line2, point):
     A = line1.paramOfLine()
+    if line2 != [] : B = line2.paramOfLine()
     # A = [a, b, c]
     if (line2 != [] and math.fabs(A[0] * line2.paramOfLine()[1] - A[1] * line2.paramOfLine()[0])>0.000001) or not line2 != []:
         return [A[0] ** 2 - 1,
@@ -354,6 +356,19 @@ def paramB(line1,line2, point):
                 A[1] * A[2] + point.y,
                 A[0] * A[1],
                 A[2] ** 2 - point.x ** 2 - point.y ** 2]
+    elif (line2 != [] and line1 != [] and 
+          (math.fabs(A[0]*point.x + A[1]*point.y + A[2])<0.000001 or 
+           math.fabs(B[0]*point.x + B[1]*point.y + B[2])<0.000001)):
+        C0 = [[[-A[1], A[0], A[1]*point.x - A[0]*point.y],
+               [A[0],A[1],A[2]]]]
+        C1 = [[[-B[1], B[0], B[1]*point.x - B[0]*point.y],
+               [B[0],B[1],B[2]]]]
+        point0 = centreOfFirstCase(C0)
+        point1 = centreOfFirstCase(C1)
+        x = (point0[0]+point1[0])/2
+        y = (point0[1]+point1[1])/2
+        return [x,y]
+
     else:
        
         B = line2.paramOfLine()
@@ -364,8 +379,8 @@ def paramB(line1,line2, point):
                [B[0],B[1],B[2]]]]
         point0 = centreOfFirstCase(C0)
         point1 = centreOfFirstCase(C1)
-        x = point0[0]+point1[0]
-        y = point0[1]+point1[1]
+        x = (point0[0]+point1[0])/2
+        y = (point0[1]+point1[1])/2
         R = Line(Point(x,y),Point(point0[0],point0[1])).dist_points()
         return [1,
                 -x,
@@ -375,16 +390,18 @@ def paramB(line1,line2, point):
                 Line(Point(x,y),point).dist_points() ** 2 - R ** 2 + x**2 + y**2]
 
 def paramC(A, B):
-    if len(A) != 1:
+    if len(A) != 1 and len(B) != 2:
         return [B[0] * A[1][0] ** 2 + B[2] + 2 * A[1][0] * B[4],
                 B[0] * A[0][0] * A[1][0] + A[1][0] * B[1] + B[3] + B[4] * A[0][0],
                 B[0] * A[0][0] ** 2 + 2 * A[0][0] * B[1] + B[5]]
+    elif len(B) == 2: return B
     else:
         return [B[0], B[1] + B[4] * A[0][0], B[2] * A[0][0] ** 2 + 2 * A[0][0] * B[3] + B[5]]
 
 # return centre in case circle tangents to 2 points and line or 2 lines and
 # point
 def centreOfSecondCase(A, C):
+    if len(C) == 2: return [C,C]
     if C[0] == 0:
         if len(A) == 2:
             Yc1 = -C[2] / 2 / C[1]
@@ -574,6 +591,7 @@ def Skeletonization(term, Lines, Points):
                     tempNodes = []
                     for T in Points:
                          if (not [i for i in range(len(skeletNodes)) if T._eq( skeletNodes[i][-1])]):
+
 
                              Xc = centreOfSecondCase(paramA1(activeBis[0][0].paramOfLine(), activeBis[0][1].paramOfLine()),
                                                      paramC(paramA1(activeBis[0][0].paramOfLine(), activeBis[0][1].paramOfLine()),
@@ -873,7 +891,7 @@ class Skeleton(inkex.Effect):
                             self.patternNode = duplist.values()[0]
             #for n in range(len(L)): 
                         node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
-		        inkex.debug("n: %s" % n)
+
 
 
 if __name__ == '__main__':
@@ -881,4 +899,11 @@ if __name__ == '__main__':
     e.affect() 
 
 
-#print(AbsPath(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))))))
+#Lllist = []
+#Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), 
+                             atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
+#Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), 
+                             atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
+#Lll = mergeLists(Lllist)
+
+#print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
