@@ -898,9 +898,9 @@ if __name__ == '__main__':
 
 #Lllist = []
 #Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), 
-               atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
+               #atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
 #Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), 
-               atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
+               #atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
 #Lll = mergeLists(Lllist)
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
