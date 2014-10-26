@@ -550,17 +550,21 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
 
     flag = True
     for readyBis in readyBisector:
-        if inList(activeBis[0], readyBis) and not [i for i in range(len(skeletNodes)) if readyBis[2]._eq( skeletNodes[i][-1])]:
+        if inList(activeBis[0], readyBis) or not [k for k in range(len(skeletNodes)) if not comparePoints(readyBis[2], skeletNodes[k][-1], 0.02) ]:
             flag = False
             break
     if flag:
-        readyBisector.append([activeBis[0][0].ccopy(),activeBis[0][1].ccopy(), activeBis[0][2].ccopy])
+        readyBisector.append([activeBis[0][0].ccopy(),activeBis[0][1].ccopy(), activeBis[0][2].ccopy()])
         for i in range(3): activeBis[0].remove(activeBis[0][0])
         activeBis.remove(activeBis[0])
 
         # add in activeBisector
         for i in range(len(node) - 1):
             activeBis.append([node[i][1],node[i + 1][1], node[1][0]])
+    else:
+
+            for i in range(3): activeBis[0].remove(activeBis[0][0])
+            activeBis.remove(activeBis[0])
 
 
 
@@ -585,7 +589,7 @@ def Skeletonization(term, Lines, Points):
                 if tempNode and not tempNode._eq(activeBis[0][2]) :
                     skeletNodes.append([activeBis[0][2].ccopy(), tempNode])
                     
-                    readyBisector.append([activeBis[0][0].ccopy(), activeBis[0][1].ccopy()])
+                    readyBisector.append([activeBis[0][0].ccopy(), activeBis[0][1].ccopy(), activeBis[0][2].ccopy()])
                     for i in range(3): activeBis[0].remove(activeBis[0][0])
                     activeBis.remove(activeBis[0])
                 else:
@@ -603,8 +607,7 @@ def Skeletonization(term, Lines, Points):
                                         node = []
                                         node.append([testingCentre(xc, activeBis[0][0]),testingCentre(xc, activeBis[0][1])])
 
-                                        if ((node[0][0] and node[0][1])   and comparePoints(node[0][0], activeBis[0][2], 0.02)
-                                              and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ] 
+                                        if ((node[0][0] and node[0][1])   and comparePoints(node[0][0], activeBis[0][2], 0.02) 
                                             and testingIntersections(node[0][0], [], T, Lines, Points)):
                                             tempNodes.append([node[0][0], T])
                                             break
@@ -619,9 +622,8 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, activeBis[0][0]), testingCentre(xc, activeBis[0][1]), testingCentre(xc, T)])
                        
-                                    if ((node[0][0] and node[0][1] and node[0][2])   and comparePoints(node[0][0], activeBis[0][2], 0.02)
-                                      and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ] 
-                                    and testingIntersections(node[0][0], activeBis[0][0], [], Lines, Points)):
+                                    if ((node[0][0] and node[0][1] and node[0][2])   and comparePoints(node[0][0], activeBis[0][2], 0.02) 
+                                        and testingIntersections(node[0][0], activeBis[0][0], [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                     if tempNodes:
                         addInLists(tempNodes, activeBis, readyBisector, skeletNodes, activeBis[0][1], Lines)
@@ -635,8 +637,7 @@ def Skeletonization(term, Lines, Points):
                          Xc = centreOfFirstCase(paramOf3Points(activeBis[0][0],activeBis[0][1], T))
                          Xc = Point(Xc[0],Xc[1])
                          if (  comparePoints(Xc, activeBis[0][2],0.02)
-                               and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.02) ] and 
-                             testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
+                             and testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
                              tempNodes.append([Xc, T])
                 for T in Lines:
                     Xc = centreOfSecondCase(paramA2(activeBis[0][0], activeBis[0][1]),
@@ -647,7 +648,6 @@ def Skeletonization(term, Lines, Points):
                             xc = Point(xc[0],xc[1])
                             node = testingCentre(xc, T)
                             if (node   and comparePoints(node, activeBis[0][2], 0.02)
-                                  and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
                                 and testingIntersections(node, [], activeBis[0][0], Lines, Points)):
                                 tempNodes.append([node, T])
                                 break
@@ -678,8 +678,7 @@ def Skeletonization(term, Lines, Points):
                                     xc = Point(xc[0],xc[1])
                                     node = testingCentre(xc, line)
                                     if (node   and comparePoints(node, activeBis[0][2],0.02)
-                                               and not[k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ]
-                                             and testingIntersections(node, [], T, Lines, Points)):
+                                        and testingIntersections(node, [], T, Lines, Points)):
                                         tempNodes.append([node, T])
                                         break
                     for T in Lines:
@@ -693,7 +692,6 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, line), testingCentre(xc, T)])
                                     if (node[0][0] and node[0][1]
-                                          and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
                                           and comparePoints(node[0][0], activeBis[0][2],0.02)
                                         and testingIntersections(node[0][0], T, [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
@@ -706,9 +704,7 @@ def Skeletonization(term, Lines, Points):
                 else: 
                     for i in range(3): activeBis[0].remove(activeBis[0][0])
                     activeBis.remove(activeBis[0])
-        else:
-            for i in range(3): activeBis[0].remove(activeBis[0][0])
-            activeBis.remove(activeBis[0])
+        
     return skeletNodes
 
 def AbsPath(sk):
@@ -902,9 +898,9 @@ if __name__ == '__main__':
 
 #Lllist = []
 #Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), 
-#atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
+               atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
 #Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), 
-#atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
+               atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
 #Lll = mergeLists(Lllist)
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
