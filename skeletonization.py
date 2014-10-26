@@ -547,14 +547,20 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
         node = orderSites(lines,node)
         node.insert(0,[[],activeBis[0][1].ccopy()])
         node.append([[],activeBis[0][0].ccopy()])
-    
-    readyBisector.append([activeBis[0][0].ccopy(),activeBis[0][1].ccopy()])
-    for i in range(3): activeBis[0].remove(activeBis[0][0])
-    activeBis.remove(activeBis[0])
 
-    # add in activeBisector
-    for i in range(len(node) - 1):
-        activeBis.append([node[i][1],node[i + 1][1], node[1][0]])
+    flag = True
+    for readyBis in readyBisector:
+        if inList(activeBis[0], readyBis) and not [i for i in range(len(skeletNodes)) if readyBis[2]._eq( skeletNodes[i][-1])]:
+            flag = False
+            break
+    if flag:
+        readyBisector.append([activeBis[0][0].ccopy(),activeBis[0][1].ccopy(), activeBis[0][2].ccopy])
+        for i in range(3): activeBis[0].remove(activeBis[0][0])
+        activeBis.remove(activeBis[0])
+
+        # add in activeBisector
+        for i in range(len(node) - 1):
+            activeBis.append([node[i][1],node[i + 1][1], node[1][0]])
 
 
 
@@ -570,12 +576,7 @@ def Skeletonization(term, Lines, Points):
     skeletNodes.append([ [], term])
     
     while activeBis:
-        flag = True
-        for readyBis in readyBisector:
-            if inList(activeBis[0], readyBis):
-                flag = False
-                break
-        if flag:
+        
 
             if isinstance(activeBis[0][0], Line) and isinstance(activeBis[0][1], Line):
                 
@@ -901,9 +902,9 @@ if __name__ == '__main__':
 
 #Lllist = []
 #Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), 
-                             atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
+#atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
 #Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), 
-                             atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
+#atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
 #Lll = mergeLists(Lllist)
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
