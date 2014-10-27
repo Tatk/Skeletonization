@@ -23,6 +23,9 @@ import math
 import re
 import random
 
+#p =  [[[[285.39537, 681.97682], [285.39537, 681.97682], [285.39537, 681.97682]], [[285.39537, 733.524], [285.39537, 733.524], [285.39537, 733.524]], [[288.91567000000003, 733.77545], [288.91567000000003, 733.77545], [288.91567000000003, 733.77545]], [[288.91567000000003, 697.81815], [288.91567000000003, 697.81815], [288.91567000000003, 697.81815]], [[295.70481, 697.81815], [295.70481, 697.81815], [295.70481, 697.81815]], [[295.70481, 734.0269], [295.70481, 734.0269], [295.70481, 734.0269]], [[304.00265, 734.0269], [304.00265, 734.0269], [304.00265, 734.0269]], [[304.00265, 679.21088], [304.00265, 679.21088], [304.00265, 679.21088]], [[285.39537, 681.97682], [285.39537, 681.97682], [285.39537, 681.97682]]]]
+#p0 =  [[[[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]], [[371.03538, 686.9843500000001], [371.03538, 686.9843500000001], [371.03538, 686.9843500000001]], [[355.19599, 690.43452], [355.19599, 690.43452], [355.19599, 690.43452]], [[362.09213, 675.76369], [362.09213, 675.76369], [362.09213, 675.76369]], [[353.91618, 661.7657], [353.91618, 661.7657], [353.91618, 661.7657]], [[369.99999, 663.79079], [369.99999, 663.79079], [369.99999, 663.79079]], [[380.78637000000003, 651.68938], [380.78637000000003, 651.68938], [380.78637000000003, 651.68938]], [[383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001]], [[398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001]], [[384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001]], [[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]]]]
+#p1 = [[[[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]], [[442.85715, 618.07648], [442.85715, 618.07648], [442.85715, 618.07648]], [[442.85715, 752.3621999999999], [442.85715, 752.3621999999999], [442.85715, 752.3621999999999]], [[328.57144, 752.3621999999999], [328.57144, 752.3621999999999], [328.57144, 752.3621999999999]], [[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]]]]
 #p0 = [[[[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]], [[409.84488, 539.77458], [409.84488, 539.77458], [409.84488, 539.77458]], [[378.40672, 558.21342], [378.40672, 558.21342], [378.40672, 558.21342]], [[382.8942, 522.04422], [382.8942, 522.04422], [382.8942, 522.04422]], [[355.64289, 497.84266], [355.64289, 497.84266], [355.64289, 497.84266]], [[391.42856, 490.93361000000004], [391.42856, 490.93361000000004], [391.42856, 490.93361000000004]], [[406.02449, 457.5373900000001], [406.02449, 457.5373900000001], [406.02449, 457.5373900000001]], [[423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001]], [[459.92585, 492.9981200000001], [459.92585, 492.9981200000001], [459.92585, 492.9981200000001]], [[435.03568, 519.6219400000001], [435.03568, 519.6219400000001], [435.03568, 519.6219400000001]], [[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]]]]
 #p1 =  [[[[314.28571, 438.07648], [314.28571, 438.07648], [314.28571, 438.07648]], [[514.28571, 438.07648], [514.28571, 438.07648], [514.28571, 438.07648]], [[514.28571, 598.07648], [514.28571, 598.07648], [514.28571, 598.07648]], [[314.28571, 598.07648], [314.28571, 598.07648], [314.28571, 598.07648]], [[314.28571, 438.07648], [314.28571, 438.07648], [314.28571, 438.07648]]]]
 #p2 =  [[[[260.0, 375.21933], [260.0, 375.21933], [260.0, 375.21933]], [[582.85715, 375.21933], [582.85715, 375.21933], [582.85715, 375.21933]], [[582.85715, 646.64789], [582.85715, 646.64789], [582.85715, 646.64789]], [[260.00000000000006, 646.64789], [260.00000000000006, 646.64789], [260.00000000000006, 646.64789]], [[260.0, 375.21933], [260.0, 375.21933], [260.0, 375.21933]]]]
@@ -554,6 +557,9 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
     for readyBis in readyBisector:
         if inList(activeBis[0], readyBis) or not [k for k in range(len(skeletNodes)) if not comparePoints(readyBis[2], skeletNodes[k][-1], 0.02) ]:
             flag = False
+            for i in range(3): activeBis[0].remove(activeBis[0][0])
+            activeBis.remove(activeBis[0])
+            for i in range(len(node) - 3): skeletNodes.remove(skeletNodes[-1])
             break
     if flag:
         readyBisector.append([activeBis[0][0].ccopy(),activeBis[0][1].ccopy(), activeBis[0][2].ccopy()])
@@ -563,10 +569,9 @@ def addInLists(tempNodes, activeBis, readyBisector, skeletNodes, segment,lines):
         # add in activeBisector
         for i in range(len(node) - 1):
             activeBis.append([node[i][1],node[i + 1][1], node[1][0]])
-    else:
+    
 
-            for i in range(3): activeBis[0].remove(activeBis[0][0])
-            activeBis.remove(activeBis[0])
+            
 
 
 
@@ -610,6 +615,7 @@ def Skeletonization(term, Lines, Points):
                                         node.append([testingCentre(xc, activeBis[0][0]),testingCentre(xc, activeBis[0][1])])
 
                                         if ((node[0][0] and node[0][1])   and comparePoints(node[0][0], activeBis[0][2], 0.02) 
+                                            and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
                                             and testingIntersections(node[0][0], [], T, Lines, Points)):
                                             tempNodes.append([node[0][0], T])
                                             break
@@ -625,6 +631,7 @@ def Skeletonization(term, Lines, Points):
                                     node.append([testingCentre(xc, activeBis[0][0]), testingCentre(xc, activeBis[0][1]), testingCentre(xc, T)])
                        
                                     if ((node[0][0] and node[0][1] and node[0][2])   and comparePoints(node[0][0], activeBis[0][2], 0.02) 
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
                                         and testingIntersections(node[0][0], activeBis[0][0], [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                     if tempNodes:
@@ -639,6 +646,7 @@ def Skeletonization(term, Lines, Points):
                          Xc = centreOfFirstCase(paramOf3Points(activeBis[0][0],activeBis[0][1], T))
                          Xc = Point(Xc[0],Xc[1])
                          if (  comparePoints(Xc, activeBis[0][2],0.02)
+                             and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.02) ]
                              and testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
                              tempNodes.append([Xc, T])
                 for T in Lines:
@@ -650,6 +658,7 @@ def Skeletonization(term, Lines, Points):
                             xc = Point(xc[0],xc[1])
                             node = testingCentre(xc, T)
                             if (node   and comparePoints(node, activeBis[0][2], 0.02)
+                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
                                 and testingIntersections(node, [], activeBis[0][0], Lines, Points)):
                                 tempNodes.append([node, T])
                                 break
@@ -680,6 +689,7 @@ def Skeletonization(term, Lines, Points):
                                     xc = Point(xc[0],xc[1])
                                     node = testingCentre(xc, line)
                                     if (node   and comparePoints(node, activeBis[0][2],0.02)
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
                                         and testingIntersections(node, [], T, Lines, Points)):
                                         tempNodes.append([node, T])
                                         break
@@ -694,7 +704,8 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, line), testingCentre(xc, T)])
                                     if (node[0][0] and node[0][1]
-                                          and comparePoints(node[0][0], activeBis[0][2],0.02)
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
+                                        and comparePoints(node[0][0], activeBis[0][2],0.02)
                                         and testingIntersections(node[0][0], T, [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                                         break
@@ -785,7 +796,7 @@ def mergeLists(List):
     for i in range(len(sortLists(List))): resultList.append(sortLists(List)[i])
     n = len(resultList)
     i = 0
-    while i != n-1 :
+    while i < n :
         concavePolygonList = []
         y = i + 1
         for m in range(i+2, n):
@@ -905,3 +916,5 @@ if __name__ == '__main__':
 #Lll = mergeLists(Lllist)
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
+
+#print(AbsPath(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))))))
