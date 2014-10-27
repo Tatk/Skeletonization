@@ -23,8 +23,10 @@ import math
 import re
 import random
 
-#p0 = [[[[117.14286, 358.07648], [117.14286, 358.07648], [117.14286, 358.07648]], [[588.57142, 358.07648], [588.57142, 358.07648], [588.57142, 358.07648]], [[588.57142, 580.93362], [588.57142, 580.93362], [588.57142, 580.93362]], [[117.14285999999998, 580.93362], [117.14285999999998, 580.93362], [117.14285999999998, 580.93362]], [[117.14286, 358.07648], [117.14286, 358.07648], [117.14286, 358.07648]]]]
-#p1 = [[[[171.42857, 432.36218], [171.42857, 432.36218], [171.42857, 432.36218]], [[274.28571, 432.36218], [274.28571, 432.36218], [274.28571, 432.36218]], [[274.28571, 515.21932], [274.28571, 515.21932], [274.28571, 515.21932]], [[171.42856999999998, 515.21932], [171.42856999999998, 515.21932], [171.42856999999998, 515.21932]], [[171.42857, 432.36218], [171.42857, 432.36218], [171.42857, 432.36218]]]]
+#p0 = [[[[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]], [[409.84488, 539.77458], [409.84488, 539.77458], [409.84488, 539.77458]], [[378.40672, 558.21342], [378.40672, 558.21342], [378.40672, 558.21342]], [[382.8942, 522.04422], [382.8942, 522.04422], [382.8942, 522.04422]], [[355.64289, 497.84266], [355.64289, 497.84266], [355.64289, 497.84266]], [[391.42856, 490.93361000000004], [391.42856, 490.93361000000004], [391.42856, 490.93361000000004]], [[406.02449, 457.5373900000001], [406.02449, 457.5373900000001], [406.02449, 457.5373900000001]], [[423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001]], [[459.92585, 492.9981200000001], [459.92585, 492.9981200000001], [459.92585, 492.9981200000001]], [[435.03568, 519.6219400000001], [435.03568, 519.6219400000001], [435.03568, 519.6219400000001]], [[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]]]]
+#p1 =  [[[[314.28571, 438.07648], [314.28571, 438.07648], [314.28571, 438.07648]], [[514.28571, 438.07648], [514.28571, 438.07648], [514.28571, 438.07648]], [[514.28571, 598.07648], [514.28571, 598.07648], [514.28571, 598.07648]], [[314.28571, 598.07648], [314.28571, 598.07648], [314.28571, 598.07648]], [[314.28571, 438.07648], [314.28571, 438.07648], [314.28571, 438.07648]]]]
+#p2 =  [[[[260.0, 375.21933], [260.0, 375.21933], [260.0, 375.21933]], [[582.85715, 375.21933], [582.85715, 375.21933], [582.85715, 375.21933]], [[582.85715, 646.64789], [582.85715, 646.64789], [582.85715, 646.64789]], [[260.00000000000006, 646.64789], [260.00000000000006, 646.64789], [260.00000000000006, 646.64789]], [[260.0, 375.21933], [260.0, 375.21933], [260.0, 375.21933]]]]
+#p3 =  [[[[31.428572, 206.6479], [31.428572, 206.6479], [31.428572, 206.6479]], [[688.57146, 206.6479], [688.57146, 206.6479], [688.57146, 206.6479]], [[688.57146, 726.6478999999999], [688.57146, 726.6478999999999], [688.57146, 726.6478999999999]], [[31.42857200000003, 726.6478999999999], [31.42857200000003, 726.6478999999999], [31.42857200000003, 726.6478999999999]], [[31.428572, 206.6479], [31.428572, 206.6479], [31.428572, 206.6479]]]]
 
 class Point(object):
     def __init__(self, x, y):
@@ -784,19 +786,18 @@ def mergeLists(List):
     n = len(resultList)
     i = 0
     while i != n-1 :
-        
+        concavePolygonList = []
+        for m in range(i+2, n):
+            if (arrPolygons([resultList[i][0], resultList[m][0]], [resultList[i][3], resultList[m][3]], 
+                            [resultList[i][4], resultList[m][4]], [resultList[i][5], resultList[m][5]])
+                and
+                not arrPolygons([resultList[i+1][0], resultList[m][0]], [resultList[i+1][3], resultList[m][3]], 
+                                [resultList[i+1][4], resultList[m][4]], [resultList[i+1][5], resultList[m][5]])):
+                concavePolygonList.append(resultList[m])
             if arrPolygons([resultList[i][0], resultList[i+1][0]], [resultList[i][3], resultList[i+1][3]], 
                            [resultList[i][4], resultList[i+1][4]], [resultList[i][5], resultList[i+1][5]]):
-
-                concavePolygonList = []
-                for m in range(i+2, n):
-                    if (arrPolygons([resultList[i][0], resultList[m][0]], [resultList[i][3], resultList[m][3]],
-                                    [resultList[i][4], resultList[m][4]], [resultList[i][5], resultList[m][5]])
-                        and
-                        not arrPolygons([resultList[i+1][0], resultList[m][0]], [resultList[i+1][3], resultList[m][3]],
-                                        [resultList[i+1][4], resultList[m][4]], [resultList[i+1][5], resultList[m][5]])):
-                        concavePolygonList.append(resultList[m])
                 concavePolygonList.append(resultList[i+1])
+            if concavePolygonList:
                 for x in range(len(concavePolygonList)):
                     #reverse segments
                     concavePolygonList[x][1].reverse()
@@ -814,10 +815,7 @@ def mergeLists(List):
                     for p in range(len(concavePolygonList[x][2])):
                         resultList[i][2].append(concavePolygonList[x][2][p])
                     resultList.remove(concavePolygonList[x])
-                i = 0
-            
-            else:
-                i += 1
+            i += 1    
             n = len(resultList)
     return resultList
 
@@ -897,10 +895,11 @@ if __name__ == '__main__':
 
 
 #Lllist = []
-#Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), 
-               #atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
-#Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), 
-               #atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
+#Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
+#Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
+#Lllist.append([termNode(getPoints(p2[0])),getLines(getPoints(p2[0])),concaveNodes(getBypassPoints(getLines(getPoints(p2[0])))), atermNode(getPoints(p2[0])), yTermNode(getPoints(p2[0])), ayTermNode(getPoints(p2[0])) ])
+#Lllist.append([termNode(getPoints(p3[0])),getLines(getPoints(p3[0])),concaveNodes(getBypassPoints(getLines(getPoints(p3[0])))), atermNode(getPoints(p3[0])), yTermNode(getPoints(p3[0])), ayTermNode(getPoints(p3[0])) ])
+
 #Lll = mergeLists(Lllist)
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
