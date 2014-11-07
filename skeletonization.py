@@ -23,7 +23,7 @@ import math
 import re
 import random
 
-#p =  [[[[285.39537, 681.97682], [285.39537, 681.97682], [285.39537, 681.97682]], [[285.39537, 733.524], [285.39537, 733.524], [285.39537, 733.524]], [[288.91567000000003, 733.77545], [288.91567000000003, 733.77545], [288.91567000000003, 733.77545]], [[288.91567000000003, 697.81815], [288.91567000000003, 697.81815], [288.91567000000003, 697.81815]], [[295.70481, 697.81815], [295.70481, 697.81815], [295.70481, 697.81815]], [[295.70481, 734.0269], [295.70481, 734.0269], [295.70481, 734.0269]], [[304.00265, 734.0269], [304.00265, 734.0269], [304.00265, 734.0269]], [[304.00265, 679.21088], [304.00265, 679.21088], [304.00265, 679.21088]], [[285.39537, 681.97682], [285.39537, 681.97682], [285.39537, 681.97682]]]]
+#p =  [[[[197.14285, 338.07648], [197.14285, 338.07648], [197.14285, 338.07648]], [[617.14285, 338.07648], [617.14285, 338.07648], [617.14285, 338.07648]], [[617.14285, 600.93362], [617.14285, 600.93362], [617.14285, 600.93362]], [[197.14284999999995, 600.93362], [197.14284999999995, 600.93362], [197.14284999999995, 600.93362]], [[197.14285, 338.07648], [197.14285, 338.07648], [197.14285, 338.07648]]]]
 #p0 =  [[[[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]], [[371.03538, 686.9843500000001], [371.03538, 686.9843500000001], [371.03538, 686.9843500000001]], [[355.19599, 690.43452], [355.19599, 690.43452], [355.19599, 690.43452]], [[362.09213, 675.76369], [362.09213, 675.76369], [362.09213, 675.76369]], [[353.91618, 661.7657], [353.91618, 661.7657], [353.91618, 661.7657]], [[369.99999, 663.79079], [369.99999, 663.79079], [369.99999, 663.79079]], [[380.78637000000003, 651.68938], [380.78637000000003, 651.68938], [380.78637000000003, 651.68938]], [[383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001]], [[398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001]], [[384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001]], [[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]]]]
 #p1 = [[[[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]], [[442.85715, 618.07648], [442.85715, 618.07648], [442.85715, 618.07648]], [[442.85715, 752.3621999999999], [442.85715, 752.3621999999999], [442.85715, 752.3621999999999]], [[328.57144, 752.3621999999999], [328.57144, 752.3621999999999], [328.57144, 752.3621999999999]], [[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]]]]
 #p0 = [[[[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]], [[409.84488, 539.77458], [409.84488, 539.77458], [409.84488, 539.77458]], [[378.40672, 558.21342], [378.40672, 558.21342], [378.40672, 558.21342]], [[382.8942, 522.04422], [382.8942, 522.04422], [382.8942, 522.04422]], [[355.64289, 497.84266], [355.64289, 497.84266], [355.64289, 497.84266]], [[391.42856, 490.93361000000004], [391.42856, 490.93361000000004], [391.42856, 490.93361000000004]], [[406.02449, 457.5373900000001], [406.02449, 457.5373900000001], [406.02449, 457.5373900000001]], [[423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001]], [[459.92585, 492.9981200000001], [459.92585, 492.9981200000001], [459.92585, 492.9981200000001]], [[435.03568, 519.6219400000001], [435.03568, 519.6219400000001], [435.03568, 519.6219400000001]], [[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]]]]
@@ -835,26 +835,42 @@ def mergeLists(List):
 def Regularization(skeletNodes,Points, e):
     skeletNodes.remove(skeletNodes[0])
     skeletNodes[0].reverse()
-    
+    lenPoints = len(Points)
+    lenSkeletNodes = len(skeletNodes)
     while Points:
         tempList = []
-        for i in range(len(skeletNodes)):
-            for j in range(len(Points)):
+        termLine = []
+        for i in range(lenSkeletNodes):
+            if skeletNodes[i][1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
+                termLine.append(skeletNodes[i])
+                break
+        for j in range(lenPoints):    
+            for i in range(lenSkeletNodes):
+            
                 if (len(skeletNodes[i]) == 2 and 
-                    skeletNodes[i][0]._eq(Points[j]) and 
-                    skeletNodes[i][1]._eq(Points[0])):
+                    skeletNodes[i][0]._eq(termLine[0][0]) and 
+                    skeletNodes[i][1]._eq(Points[j]) 
+                    ):
                     tempList.append(skeletNodes[i])
+                    break
+
         maxD = Line(tempList[0][0], tempList[0][1]).dist_points()
         for i in range(1, len(tempList)-1):
             maxD = max(maxD, Line(tempList[i][0], tempList[i][1]).dist_points())
         if maxD < e:
             # check term point
-            for i in range(len(skeletNodes)):
+            skeletNodes.remove(termLine[0])
+            lenSkeletNodes = len(skeletNodes)
+            k = 0
+            for i in range(lenSkeletNodes):
                 if (len(skeletNodes[i]) == 2 and
-                    (skeletNodes[i][0]._eq(Point[0]) or skeletNodes[i][1]._eq(Point[0]))):
-                    Points.append(skeletNodes[i][0])
-            skeletNodes.remove(skeletNodes[0])
+                    (skeletNodes[i][0]._eq(termLine[0][0]) or skeletNodes[i][1]._eq(termLine[0][0]))):
+                    k += 1
+            if k == 1: Points.append(termLine[0][0])
+            
         Points.remove(Points[0])
+        lenPoints = len(Points)
+        lenSkeletNodes = len(skeletNodes)
     return skeletNodes
 
 class Skeleton(inkex.Effect):
@@ -909,7 +925,7 @@ class Skeleton(inkex.Effect):
                 self.patternNode = duplist.values()[0]
             #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
 
-            node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2])), List[0][2], self.options.exponent)))
+            node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2]), List[0][2], self.options.exponent))))
 
     
         else:
@@ -929,7 +945,7 @@ class Skeleton(inkex.Effect):
                             self.patternNode = duplist.values()[0]
             #for n in range(len(L)): 
                         #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
-                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2])), List[n][2], self.options.exponent)))
+                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][2], self.options.exponent))))
 
 
 
@@ -949,4 +965,4 @@ if __name__ == '__main__':
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
 
-#print(AbsPath(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))))))
+#print(AbsPath(Regularization(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), getBypassPoints(getLines(getPoints(p[0]))), 200 )))
