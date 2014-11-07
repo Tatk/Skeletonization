@@ -615,7 +615,7 @@ def Skeletonization(term, Lines, Points):
                                         node.append([testingCentre(xc, activeBis[0][0]),testingCentre(xc, activeBis[0][1])])
 
                                         if ((node[0][0] and node[0][1])   and comparePoints(node[0][0], activeBis[0][2], 0.02) 
-                                            #and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
+                                            and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
                                             and testingIntersections(node[0][0], [], T, Lines, Points)):
                                             tempNodes.append([node[0][0], T])
                                             break
@@ -631,7 +631,7 @@ def Skeletonization(term, Lines, Points):
                                     node.append([testingCentre(xc, activeBis[0][0]), testingCentre(xc, activeBis[0][1]), testingCentre(xc, T)])
                        
                                     if ((node[0][0] and node[0][1] and node[0][2])   and comparePoints(node[0][0], activeBis[0][2], 0.02) 
-                                        #and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
                                         and testingIntersections(node[0][0], activeBis[0][0], [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
                     if tempNodes:
@@ -646,7 +646,7 @@ def Skeletonization(term, Lines, Points):
                          Xc = centreOfFirstCase(paramOf3Points(activeBis[0][0],activeBis[0][1], T))
                          Xc = Point(Xc[0],Xc[1])
                          if (  comparePoints(Xc, activeBis[0][2],0.02)
-                             #and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.02) ]
+                             and not [k for k in range(len(skeletNodes)) if not comparePoints(Xc, skeletNodes[k][-1], 0.02) ]
                              and testingIntersections(Xc, [], activeBis[0][0], Lines, Points)):
                              tempNodes.append([Xc, T])
                 for T in Lines:
@@ -658,7 +658,7 @@ def Skeletonization(term, Lines, Points):
                             xc = Point(xc[0],xc[1])
                             node = testingCentre(xc, T)
                             if (node   and comparePoints(node, activeBis[0][2], 0.02)
-                                #and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
+                                and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
                                 and testingIntersections(node, [], activeBis[0][0], Lines, Points)):
                                 tempNodes.append([node, T])
                                 break
@@ -689,7 +689,7 @@ def Skeletonization(term, Lines, Points):
                                     xc = Point(xc[0],xc[1])
                                     node = testingCentre(xc, line)
                                     if (node   and comparePoints(node, activeBis[0][2],0.02)
-                                        #and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node, skeletNodes[k][-1], 0.02) ] 
                                         and testingIntersections(node, [], T, Lines, Points)):
                                         tempNodes.append([node, T])
                                         break
@@ -704,7 +704,7 @@ def Skeletonization(term, Lines, Points):
                                     node = []
                                     node.append([testingCentre(xc, line), testingCentre(xc, T)])
                                     if (node[0][0] and node[0][1]
-                                        #and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
+                                        and not [k for k in range(len(skeletNodes)) if not comparePoints(node[0][0], skeletNodes[k][-1], 0.02) ]
                                         and comparePoints(node[0][0], activeBis[0][2],0.02)
                                         and testingIntersections(node[0][0], T, [], Lines, Points)):
                                         tempNodes.append([node[0][0], T])
@@ -796,11 +796,9 @@ def mergeLists(List):
     for i in range(len(sortLists(List))): resultList.append(sortLists(List)[i])
     n = len(resultList)
     i = 0
-    while i < n-1 :
+    while i < n :
         concavePolygonList = []
         y = i + 1
-	#inkex.debug("i: %s" % i)
-	#inkex.debug("n: %s" % n)
         for m in range(i+2, n):
             if (arrPolygons([resultList[i][0], resultList[m][0]], [resultList[i][3], resultList[m][3]], 
                             [resultList[i][4], resultList[m][4]], [resultList[i][5], resultList[m][5]])
@@ -824,7 +822,7 @@ def mergeLists(List):
                 concavePolygonList[x].insert(2,[])
                 for l in range(len(temp[0])):
                     concavePolygonList[x][2].append(temp[0][l])
-                #merge i-list and i+1-list
+                #merge with i-list 
                 for j in range(len(concavePolygonList[x][1])):
                     resultList[i][1].append(concavePolygonList[x][1][j])
                 for p in range(len(concavePolygonList[x][2])):
@@ -834,7 +832,30 @@ def mergeLists(List):
         n = len(resultList)
     return resultList
 
-
+def Regularization(skeletNodes,Points, e):
+    skeletNodes.remove(skeletNodes[0])
+    skeletNodes[0].reverse()
+    
+    while Points:
+        tempList = []
+        for i in range(len(skeletNodes)):
+            for j in range(len(Points)):
+                if (len(skeletNodes[i]) == 2 and 
+                    skeletNodes[i][0]._eq(Points[j]) and 
+                    skeletNodes[i][1]._eq(Points[0])):
+                    tempList.append(skeletNodes[i])
+        maxD = Line(tempList[0][0], tempList[0][1]).dist_points()
+        for i in range(1, len(tempList)-1):
+            maxD = max(maxD, Line(tempList[i][0], tempList[i][1]).dist_points())
+        if maxD < e:
+            # check term point
+            for i in range(len(skeletNodes)):
+                if (len(skeletNodes[i]) == 2 and
+                    (skeletNodes[i][0]._eq(Point[0]) or skeletNodes[i][1]._eq(Point[0]))):
+                    Points.append(skeletNodes[i][0])
+            skeletNodes.remove(skeletNodes[0])
+        Points.remove(Points[0])
+    return skeletNodes
 
 class Skeleton(inkex.Effect):
     def __init__(self):
@@ -842,8 +863,12 @@ class Skeleton(inkex.Effect):
 
         self.OptionParser.add_option("-c", "--copymode",
                                      action="store", type="inkbool",
-                                     dest="copymode", default=False,
+                                     dest="copymode", default=True,
                                      help="duplicate pattern before skeletonization")
+        self.OptionParser.add_option("-e", "--exponent",
+                                     action="store", type="int",
+                                     dest="exponent", default=0,
+                                     help="regularization")
     def duplicateNodes(self, aList):
         clones={}
         for id,node in aList.iteritems():
@@ -882,7 +907,10 @@ class Skeleton(inkex.Effect):
             if self.options.copymode:
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
-            node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
+            #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
+
+            node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2])), List[0][2], self.options.exponent)))
+
     
         else:
             L = mergeLists(List)
@@ -900,7 +928,9 @@ class Skeleton(inkex.Effect):
                             duplist=self.duplicateNodes({id:self.patternNode})
                             self.patternNode = duplist.values()[0]
             #for n in range(len(L)): 
-                        node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+                        #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
+                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2])), List[n][2], self.options.exponent)))
+
 
 
 
