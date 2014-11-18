@@ -23,7 +23,7 @@ import math
 import re
 import random
 
-#p =  [[[[196.88102, 337.81465], [196.88102, 337.81465], [196.88102, 337.81465]], [[643.11896, 337.81465], [643.11896, 337.81465], [643.11896, 337.81465]], [[643.11896, 472.62402], [643.11896, 472.62402], [643.11896, 472.62402]], [[196.88102000000003, 472.62402], [196.88102000000003, 472.62402], [196.88102000000003, 472.62402]], [[196.88102, 337.81465], [196.88102, 337.81465], [196.88102, 337.81465]]]]
+#p =  [[[[265.71428, 615.21934], [265.71428, 615.21934], [265.71428, 615.21934]], [[171.33837999999997, 488.29958999999997], [171.33837999999997, 488.29958999999997], [171.33837999999997, 488.29958999999997]], [[13.281769999999966, 494.09144999999995], [13.281769999999966, 494.09144999999995], [13.281769999999966, 494.09144999999995]], [[104.82586999999997, 365.1142699999999], [104.82586999999997, 365.1142699999999], [104.82586999999997, 365.1142699999999]], [[50.47530499999996, 216.58328999999992], [50.47530499999996, 216.58328999999992], [50.47530499999996, 216.58328999999992]], [[201.42857999999995, 263.7907699999999], [201.42857999999995, 263.7907699999999], [201.42857999999995, 263.7907699999999]], [[325.89468999999997, 166.2016999999999], [325.89468999999997, 166.2016999999999], [325.89468999999997, 166.2016999999999]], [[327.64482999999996, 324.3547099999999], [327.64482999999996, 324.3547099999999], [327.64482999999996, 324.3547099999999]], [[458.91968999999995, 412.5723399999999], [458.91968999999995, 412.5723399999999], [458.91968999999995, 412.5723399999999]], [[309.04806999999994, 463.1087899999999], [309.04806999999994, 463.1087899999999], [309.04806999999994, 463.1087899999999]], [[265.71428, 615.21934], [265.71428, 615.21934], [265.71428, 615.21934]]]]
 #p0 =  [[[[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]], [[371.03538, 686.9843500000001], [371.03538, 686.9843500000001], [371.03538, 686.9843500000001]], [[355.19599, 690.43452], [355.19599, 690.43452], [355.19599, 690.43452]], [[362.09213, 675.76369], [362.09213, 675.76369], [362.09213, 675.76369]], [[353.91618, 661.7657], [353.91618, 661.7657], [353.91618, 661.7657]], [[369.99999, 663.79079], [369.99999, 663.79079], [369.99999, 663.79079]], [[380.78637000000003, 651.68938], [380.78637000000003, 651.68938], [380.78637000000003, 651.68938]], [[383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001]], [[398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001]], [[384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001]], [[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]]]]
 #p1 = [[[[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]], [[442.85715, 618.07648], [442.85715, 618.07648], [442.85715, 618.07648]], [[442.85715, 752.3621999999999], [442.85715, 752.3621999999999], [442.85715, 752.3621999999999]], [[328.57144, 752.3621999999999], [328.57144, 752.3621999999999], [328.57144, 752.3621999999999]], [[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]]]]
 #p0 = [[[[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]], [[409.84488, 539.77458], [409.84488, 539.77458], [409.84488, 539.77458]], [[378.40672, 558.21342], [378.40672, 558.21342], [378.40672, 558.21342]], [[382.8942, 522.04422], [382.8942, 522.04422], [382.8942, 522.04422]], [[355.64289, 497.84266], [355.64289, 497.84266], [355.64289, 497.84266]], [[391.42856, 490.93361000000004], [391.42856, 490.93361000000004], [391.42856, 490.93361000000004]], [[406.02449, 457.5373900000001], [406.02449, 457.5373900000001], [406.02449, 457.5373900000001]], [[423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001]], [[459.92585, 492.9981200000001], [459.92585, 492.9981200000001], [459.92585, 492.9981200000001]], [[435.03568, 519.6219400000001], [435.03568, 519.6219400000001], [435.03568, 519.6219400000001]], [[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]]]]
@@ -253,7 +253,17 @@ def concaveNodes(points):
     tempTermLines = traversePath(points[n], points[0], points[1])  
     if termLines == True and tempTermLines == False or termLines == False and tempTermLines == True:
         concaveList.append(points[0])
-    return concaveList   
+    return concaveList  
+
+def termNodes(points, concaveNodes):
+    termNodesList = []
+    for i in range(len(points)):
+        flag = True
+        for j in range(len(concaveNodes)):
+            if points[i]._eq(concaveNodes[j]):
+                flag = False
+        if flag : termNodesList.append(points[i])
+    return termNodesList
 
 ##############################################################################
 # Parametrization to find centre of circle in case circle tangents to 3 points
@@ -841,7 +851,7 @@ def Regularization(skeletNodes,Points, e):
         tempList = []
         termLine = []
         for i in range(lenSkeletNodes):
-            if skeletNodes[i][1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
+            if len(skeletNodes[i])==2 and skeletNodes[i][1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
                 termLine.append(skeletNodes[i])
                 break
         for j in range(lenPoints):    
@@ -872,6 +882,7 @@ def Regularization(skeletNodes,Points, e):
         lenPoints = len(Points)
         lenSkeletNodes = len(skeletNodes)
     return skeletNodes
+
 
 class Skeleton(inkex.Effect):
     def __init__(self):
@@ -914,7 +925,8 @@ class Skeleton(inkex.Effect):
                 p = cubicsuperpath.parsePath(node.get('d'))
                 inkex.debug("nodes: %s" % p)
                 List.append([termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))), 
-                             atermNode(getPoints(p[0])), yTermNode(getPoints(p[0])), ayTermNode(getPoints(p[0])) ])
+                             atermNode(getPoints(p[0])), yTermNode(getPoints(p[0])), ayTermNode(getPoints(p[0])),
+                            termNodes(getBypassPoints(getLines(getPoints(p[0]))), concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))) ])
         
         if len(List) == 1:
             self.patternNode=self.selected[Id]
@@ -925,7 +937,7 @@ class Skeleton(inkex.Effect):
                 self.patternNode = duplist.values()[0]
             #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
 
-            node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2]), List[0][2], self.options.exponent))))
+            node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2]), List[0][6], self.options.exponent))))
 
     
         else:
@@ -945,7 +957,7 @@ class Skeleton(inkex.Effect):
                             self.patternNode = duplist.values()[0]
             #for n in range(len(L)): 
                         #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
-                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][2], self.options.exponent))))
+                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][6], self.options.exponent))))
 
 
 
@@ -965,4 +977,4 @@ if __name__ == '__main__':
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
 
-#print(AbsPath(Regularization(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), getBypassPoints(getLines(getPoints(p[0]))), 100 )))
+#print(AbsPath(Regularization(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), termNodes(getBypassPoints(getLines(getPoints(p[0]))), concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), 100 )))
