@@ -847,7 +847,7 @@ def clippingNodes(skeletNodes):
     for i in range(len(skeletNodes)):
         if len(skeletNodes[i]) == 3:
             line = Line(skeletNodes[i][0],skeletNodes[i][2]).paramOfLine()
-            if math.fabs(line[0]*skeletNodes[i][1].x + line[1]*skeletNodes[i][1].y + line[2]) < 0.02 :
+            if math.fabs(line[0]*skeletNodes[i][1].x + line[1]*skeletNodes[i][1].y + line[2]) < 1 :
                 skeletNodes[i].remove(skeletNodes[i][1])
 
     return skeletNodes
