@@ -842,6 +842,18 @@ def mergeLists(List):
         n = len(resultList)
     return resultList
 
+
+def clippingNodes(skeletNodes):
+    for i in range(len(skeletNodes)):
+        if len(skeletNodes[i]) == 3:
+            line = Line(skeletNodes[i][0],skeletNodes[i][2]).paramOfLine()
+            if math.fabs(line[0]*skeletNodes[i][1].x + line[1]*skeletNodes[i][1].y + line[2]) < 0.02 :
+                skeletNodes[i].remove(skeletNodes[i][1])
+
+    return skeletNodes
+
+
+
 def Regularization(skeletNodes,Points, e):
     skeletNodes.remove(skeletNodes[0])
     skeletNodes[0].reverse()
@@ -850,10 +862,12 @@ def Regularization(skeletNodes,Points, e):
     while Points:
         tempList = []
         termLine = []
+        #find termLine
         for i in range(lenSkeletNodes):
             if len(skeletNodes[i])==2 and skeletNodes[i][1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
                 termLine.append(skeletNodes[i])
                 break
+        #find all term lines from concave node
         for j in range(lenPoints):    
             for i in range(lenSkeletNodes):
             
@@ -863,7 +877,7 @@ def Regularization(skeletNodes,Points, e):
                     ):
                     tempList.append(skeletNodes[i])
                     break
-
+        #find max distance
         maxD = Line(tempList[0][0], tempList[0][1]).dist_points()
         for i in range(1, len(tempList)-1):
             maxD = max(maxD, Line(tempList[i][0], tempList[i][1]).dist_points())
@@ -871,6 +885,7 @@ def Regularization(skeletNodes,Points, e):
             # check term point
             skeletNodes.remove(termLine[0])
             lenSkeletNodes = len(skeletNodes)
+            
             k = 0
             for i in range(lenSkeletNodes):
                 if (len(skeletNodes[i]) == 2 and
@@ -882,7 +897,6 @@ def Regularization(skeletNodes,Points, e):
         lenPoints = len(Points)
         lenSkeletNodes = len(skeletNodes)
     return skeletNodes
-
 
 class Skeleton(inkex.Effect):
     def __init__(self):
@@ -937,7 +951,7 @@ class Skeleton(inkex.Effect):
                 self.patternNode = duplist.values()[0]
             #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
 
-            node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2]), List[0][6], self.options.exponent))))
+            node.set('d',simplepath.formatPath(AbsPath(Regularization(clippingNodes(Skeletonization(List[0][0],List[0][1],List[0][2])), List[0][6], self.options.exponent))))
 
     
         else:
@@ -957,7 +971,7 @@ class Skeleton(inkex.Effect):
                             self.patternNode = duplist.values()[0]
             #for n in range(len(L)): 
                         #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
-                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][6], self.options.exponent))))
+                        node.set('d',simplepath.formatPath(AbsPath(Regularization(clippingNodes(Skeletonization(List[n][0],List[n][1],List[n][2])), List[n][6], self.options.exponent))))
 
 
 
@@ -965,7 +979,7 @@ class Skeleton(inkex.Effect):
 if __name__ == '__main__':
     e = Skeleton()
     e.affect() 
-
+ 
 
 #Lllist = []
 #Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
@@ -977,4 +991,4 @@ if __name__ == '__main__':
 
 #print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
 
-#print(AbsPath(Regularization(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), termNodes(getBypassPoints(getLines(getPoints(p[0]))), concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), 100 )))
+#print(AbsPath(Regularization(clippingNodes(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))))), termNodes(getBypassPoints(getLines(getPoints(p[0]))), concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), 180 )))
