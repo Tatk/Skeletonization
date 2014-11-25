@@ -872,7 +872,8 @@ def Regularization(skeletNodes,Points, e):
     #lenClippingNodes = len(clippingNodes)
     lenPoints = len(Points)
     lenSkeletNodes = len(skeletNodes)
-    while Points:
+    count = 0
+    while count != lenPoints:
         numb = None
         tempList = []
         termLine = []
@@ -880,16 +881,16 @@ def Regularization(skeletNodes,Points, e):
         filletNodes = []
         #find termLine
         for i in range(lenSkeletNodes):
-            if skeletNodes[i][-1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
+            if skeletNodes[i][-1]._eq(Points[count]) or skeletNodes[i][0]._eq(Points[count]): 
                 numb = i
-                if skeletNodes[i][-1]._eq(Points[0]): concaveNode.append(skeletNodes[i][0])
+                if skeletNodes[i][-1]._eq(Points[count]): concaveNode.append(skeletNodes[i][0])
                 else: concaveNode.append(skeletNodes[i][-1])
                 break
         #find all term lines from concave node
 
-        if Points[0].List : 
-            for k in range(len(Points[0].List)): filletNodes.append(Points[0].List[k])
-        else: filletNodes.append(Points[0])
+        if Points[count].List : 
+            for k in range(len(Points[count].List)): filletNodes.append(Points[count].List[k])
+        else: filletNodes.append(Points[count])
         if concaveNode[0].List:
             for k in range(len(concaveNode[0].List)): filletNodes.append(concaveNode[0].List[k])
 
@@ -926,11 +927,12 @@ def Regularization(skeletNodes,Points, e):
                 
                 skeletNodes.remove(skeletNodes[numb])
                 lenSkeletNodes = len(skeletNodes)
-        Points.remove(Points[0])
+        #Points.remove(Points[count])
         #clippingNodes.remove(clippingNodes[0])
         #lenClippingNodes = len(clippingNodes)
         lenPoints = len(Points)
         lenSkeletNodes = len(skeletNodes)
+        count+=1
     return skeletNodes
 
 class Skeleton(inkex.Effect):
