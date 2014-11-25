@@ -877,7 +877,7 @@ def Regularization(skeletNodes,Points, e):
                 else: concaveNode.append(skeletNodes[i][-1])
                 break
         #find all term lines from concave node
-        for j in range(lenPoints):    
+        for j in range(len(Points)):    
             for i in range(lenSkeletNodes):
             
                 if (skeletNodes[i][0]._eq(concaveNode[0]) and skeletNodes[i][-1]._eq(Points[j]) or
@@ -905,7 +905,7 @@ def Regularization(skeletNodes,Points, e):
             skeletNodes.remove(skeletNodes[numb])
             lenSkeletNodes = len(skeletNodes)
         Points.remove(Points[0])
-        lenPoints = len(Points)
+        lenClippingNodes = len(clippingNodes)
         lenSkeletNodes = len(skeletNodes)
     return skeletNodes
 
