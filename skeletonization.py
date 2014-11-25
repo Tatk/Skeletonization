@@ -37,7 +37,15 @@ class Point(object):
         self.y = y
         self.List = copy.deepcopy(List)
     def setList(self, List):
-        self.List = copy.deepcopy(List)
+        if self.List:
+            for i in range(len(List)):
+                flag = True
+                for j in range(len(self.List)):
+                    if List[i]._eq(self.List[j]): flag = False
+                if flag: self.List.append(List[i])
+        else: self.List = copy.deepcopy(List)
+
+        
     def _eq(self, other):
         if (math.fabs(self.x - other.x)<0.01 and math.fabs(self.y - other.y)<0.01):
             return True
@@ -860,11 +868,11 @@ def clippingNodes(skeletNodes):
 def Regularization(skeletNodes,Points, e):
     skeletNodes.remove(skeletNodes[0])
     #skeletNodes[0].reverse()
-    clippingNodes = copy.deepcopy(Points)
-    lenClippingNodes = len(clippingNodes)
+    #clippingNodes = copy.deepcopy(Points)
+    #lenClippingNodes = len(clippingNodes)
     lenPoints = len(Points)
     lenSkeletNodes = len(skeletNodes)
-    while clippingNodes:
+    while Points:
         numb = None
         tempList = []
         termLine = []
@@ -872,12 +880,20 @@ def Regularization(skeletNodes,Points, e):
         filletNodes = []
         #find termLine
         for i in range(lenSkeletNodes):
-            if skeletNodes[i][-1]._eq(clippingNodes[0]) or skeletNodes[i][0]._eq(clippingNodes[0]): 
+            if skeletNodes[i][-1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
                 numb = i
-                if skeletNodes[i][-1]._eq(clippingNodes[0]): concaveNode.append(skeletNodes[i][0])
+                if skeletNodes[i][-1]._eq(Points[0]): concaveNode.append(skeletNodes[i][0])
                 else: concaveNode.append(skeletNodes[i][-1])
                 break
         #find all term lines from concave node
+
+        if Points[0].List : 
+            for k in range(len(Points[0].List)): filletNodes.append(Points[0].List[k])
+        else: filletNodes.append(Points[0])
+        if concaveNode[0].List:
+            for k in range(len(concaveNode[0].List)): filletNodes.append(concaveNode[0].List[k])
+
+        
         for j in range(lenPoints):    
             for i in range(lenSkeletNodes):
             
@@ -885,11 +901,11 @@ def Regularization(skeletNodes,Points, e):
                     skeletNodes[i][-1]._eq(concaveNode[0]) and skeletNodes[i][0]._eq(Points[j])):
                         
                         tempList.append(skeletNodes[i])
-                        if Points[j].List : 
-                            for k in range(len(Points[j].List)): filletNodes.append(Points[j].List[k])
-                        else: filletNodes.append(Points[j])
+                        #if Points[j].List : 
+                        #    for k in range(len(Points[j].List)): filletNodes.append(Points[j].List[k])
+                        #else: filletNodes.append(Points[j])
                         break
-               
+              
         #find max distance
         if filletNodes: 
             maxD = Line(filletNodes[0], concaveNode[0]).dist_points()
@@ -897,17 +913,22 @@ def Regularization(skeletNodes,Points, e):
                 maxD = max(maxD, Line(filletNodes[i], concaveNode[0]).dist_points())
             if maxD < e:
                 # check term point
-            
-                concaveNode[0].setList(filletNodes)
 
+                
+                for i in range(len(tempList)): 
+                    if tempList[i][0]._eq(concaveNode[0]): tempList[i][0].setList(filletNodes)
+                    else: tempList[i][-1].setList(filletNodes)
+
+                
                 if len(tempList) == 1:
-                    #Points.append(concaveNode[0])
-                    clippingNodes.append(concaveNode[0])
-
+                    Points.append(concaveNode[0])
+                    #clippingNodes.append(concaveNode[0])
+                
                 skeletNodes.remove(skeletNodes[numb])
                 lenSkeletNodes = len(skeletNodes)
-        clippingNodes.remove(clippingNodes[0])
-        lenClippingNodes = len(clippingNodes)
+        Points.remove(Points[0])
+        #clippingNodes.remove(clippingNodes[0])
+        #lenClippingNodes = len(clippingNodes)
         lenPoints = len(Points)
         lenSkeletNodes = len(skeletNodes)
     return skeletNodes
