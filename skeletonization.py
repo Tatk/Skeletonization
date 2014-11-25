@@ -862,6 +862,7 @@ def Regularization(skeletNodes,Points, e):
     #skeletNodes[0].reverse()
     clippingNodes = copy.deepcopy(Points)
     lenClippingNodes = len(clippingNodes)
+    lenPoints = len(Points)
     lenSkeletNodes = len(skeletNodes)
     while clippingNodes:
         numb = None
@@ -877,7 +878,7 @@ def Regularization(skeletNodes,Points, e):
                 else: concaveNode.append(skeletNodes[i][-1])
                 break
         #find all term lines from concave node
-        for j in range(len(Points)):    
+        for j in range(lenPoints):    
             for i in range(lenSkeletNodes):
             
                 if (skeletNodes[i][0]._eq(concaveNode[0]) and skeletNodes[i][-1]._eq(Points[j]) or
@@ -900,12 +901,13 @@ def Regularization(skeletNodes,Points, e):
 
             if len(tempList) == 1:
                 Points.append(concaveNode[0])
-                clippingNodes.append(concaveNodes[0])
+                clippingNodes.append(concaveNode[0])
 
             skeletNodes.remove(skeletNodes[numb])
             lenSkeletNodes = len(skeletNodes)
-        Points.remove(Points[0])
+        clippingNodes.remove(clippingNodes[0])
         lenClippingNodes = len(clippingNodes)
+	    lenPoints = len(Points)
         lenSkeletNodes = len(skeletNodes)
     return skeletNodes
 
