@@ -5,7 +5,8 @@
     <dependency type="executable" location="extensions">skeletonization.py</dependency>
     <dependency type="executable" location="extensions">inkex.py</dependency>
     <param name="copymode" type="boolean" _gui-text="Original pattern will be copied:">true</param>
-    <param name="exponent" type="int" _gui-text="Regularization">0</param>
+    <param name="exponent" type="int" min="0" max="1000" _gui-text="Regularization">0</param>
+    <param name="flatness" type="float" min="0.0" max="1000.0" _gui-text="Flatness">10.0</param>
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
