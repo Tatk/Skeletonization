@@ -22,14 +22,9 @@ import copy
 import math
 import re
 import random
+import cspsubdiv
 
-#p =  [[[[539.99999, 912.3622], [539.99999, 912.3622], [539.99999, 912.3622]], [[419.61452, 856.81159], [419.61452, 856.81159], [419.61452, 856.81159]], [[350.1693, 866.4052800000001], [350.1693, 866.4052800000001], [350.1693, 866.4052800000001]], [[253.13176, 922.5026300000001], [253.13176, 922.5026300000001], [253.13176, 922.5026300000001]], [[204.69317, 996.72959], [204.69317, 996.72959], [204.69317, 996.72959]], [[137.97894000000002, 846.36431], [137.97894000000002, 846.36431], [137.97894000000002, 846.36431]], [[189.73989000000003, 801.9884000000001], [189.73989000000003, 801.9884000000001], [189.73989000000003, 801.9884000000001]], [[112.88438000000004, 726.2038600000001], [112.88438000000004, 726.2038600000001], [112.88438000000004, 726.2038600000001]], [[20.83950700000004, 703.9048100000001], [20.83950700000004, 703.9048100000001], [20.83950700000004, 703.9048100000001]], [[147.61442000000005, 671.6756100000001], [147.61442000000005, 671.6756100000001], [147.61442000000005, 671.6756100000001]], [[201.42856000000006, 629.5050600000001], [201.42856000000006, 629.5050600000001], [201.42856000000006, 629.5050600000001]], [[190.43188000000006, 560.1042900000001], [190.43188000000006, 560.1042900000001], [190.43188000000006, 560.1042900000001]], [[229.49716000000006, 547.0446200000001], [229.49716000000006, 547.0446200000001], [229.49716000000006, 547.0446200000001]], [[242.51852000000005, 438.56175000000013], [242.51852000000005, 438.56175000000013], [242.51852000000005, 438.56175000000013]], [[292.60262000000006, 551.3633200000002], [292.60262000000006, 551.3633200000002], [292.60262000000006, 551.3633200000002]], [[369.08198000000004, 587.3213600000001], [369.08198000000004, 587.3213600000001], [369.08198000000004, 587.3213600000001]], [[445.1634700000001, 618.4198000000001], [445.1634700000001, 618.4198000000001], [445.1634700000001, 618.4198000000001]], [[563.3773400000001, 567.3955100000002], [563.3773400000001, 567.3955100000002], [563.3773400000001, 567.3955100000002]], [[456.4286800000001, 667.9667300000002], [456.4286800000001, 667.9667300000002], [456.4286800000001, 667.9667300000002]], [[461.0088000000001, 733.7337500000002], [461.0088000000001, 733.7337500000002], [461.0088000000001, 733.7337500000002]], [[539.7730100000001, 754.0562500000002], [539.7730100000001, 754.0562500000002], [539.7730100000001, 754.0562500000002]], [[499.87299000000013, 826.6398900000002], [499.87299000000013, 826.6398900000002], [499.87299000000013, 826.6398900000002]], [[539.99999, 912.3622], [539.99999, 912.3622], [539.99999, 912.3622]]]]
-#p0 =  [[[[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]], [[371.03538, 686.9843500000001], [371.03538, 686.9843500000001], [371.03538, 686.9843500000001]], [[355.19599, 690.43452], [355.19599, 690.43452], [355.19599, 690.43452]], [[362.09213, 675.76369], [362.09213, 675.76369], [362.09213, 675.76369]], [[353.91618, 661.7657], [353.91618, 661.7657], [353.91618, 661.7657]], [[369.99999, 663.79079], [369.99999, 663.79079], [369.99999, 663.79079]], [[380.78637000000003, 651.68938], [380.78637000000003, 651.68938], [380.78637000000003, 651.68938]], [[383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001], [383.83056000000005, 667.6117800000001]], [[398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001], [398.67286000000007, 674.1306900000001]], [[384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001], [384.4704700000001, 681.9461900000001]], [[382.85713, 698.0765], [382.85713, 698.0765], [382.85713, 698.0765]]]]
-#p1 = [[[[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]], [[442.85715, 618.07648], [442.85715, 618.07648], [442.85715, 618.07648]], [[442.85715, 752.3621999999999], [442.85715, 752.3621999999999], [442.85715, 752.3621999999999]], [[328.57144, 752.3621999999999], [328.57144, 752.3621999999999], [328.57144, 752.3621999999999]], [[328.57144, 618.07648], [328.57144, 618.07648], [328.57144, 618.07648]]]]
-#p0 = [[[[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]], [[409.84488, 539.77458], [409.84488, 539.77458], [409.84488, 539.77458]], [[378.40672, 558.21342], [378.40672, 558.21342], [378.40672, 558.21342]], [[382.8942, 522.04422], [382.8942, 522.04422], [382.8942, 522.04422]], [[355.64289, 497.84266], [355.64289, 497.84266], [355.64289, 497.84266]], [[391.42856, 490.93361000000004], [391.42856, 490.93361000000004], [391.42856, 490.93361000000004]], [[406.02449, 457.5373900000001], [406.02449, 457.5373900000001], [406.02449, 457.5373900000001]], [[423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001], [423.65376000000003, 489.4365600000001]], [[459.92585, 492.9981200000001], [459.92585, 492.9981200000001], [459.92585, 492.9981200000001]], [[435.03568, 519.6219400000001], [435.03568, 519.6219400000001], [435.03568, 519.6219400000001]], [[442.85713, 555.21933], [442.85713, 555.21933], [442.85713, 555.21933]]]]
-#p1 =  [[[[314.28571, 438.07648], [314.28571, 438.07648], [314.28571, 438.07648]], [[514.28571, 438.07648], [514.28571, 438.07648], [514.28571, 438.07648]], [[514.28571, 598.07648], [514.28571, 598.07648], [514.28571, 598.07648]], [[314.28571, 598.07648], [314.28571, 598.07648], [314.28571, 598.07648]], [[314.28571, 438.07648], [314.28571, 438.07648], [314.28571, 438.07648]]]]
-#p2 =  [[[[260.0, 375.21933], [260.0, 375.21933], [260.0, 375.21933]], [[582.85715, 375.21933], [582.85715, 375.21933], [582.85715, 375.21933]], [[582.85715, 646.64789], [582.85715, 646.64789], [582.85715, 646.64789]], [[260.00000000000006, 646.64789], [260.00000000000006, 646.64789], [260.00000000000006, 646.64789]], [[260.0, 375.21933], [260.0, 375.21933], [260.0, 375.21933]]]]
-#p3 =  [[[[31.428572, 206.6479], [31.428572, 206.6479], [31.428572, 206.6479]], [[688.57146, 206.6479], [688.57146, 206.6479], [688.57146, 206.6479]], [[688.57146, 726.6478999999999], [688.57146, 726.6478999999999], [688.57146, 726.6478999999999]], [[31.42857200000003, 726.6478999999999], [31.42857200000003, 726.6478999999999], [31.42857200000003, 726.6478999999999]], [[31.428572, 206.6479], [31.428572, 206.6479], [31.428572, 206.6479]]]]
+#p = 
 
 class Point(object):
     def __init__(self, x, y, List = []):
@@ -866,58 +861,62 @@ def clippingNodes(skeletNodes):
 
 
 def Regularization(skeletNodes,Points, e):
+    
     skeletNodes.remove(skeletNodes[0])
-    lenPoints = len(Points)
-    lenSkeletNodes = len(skeletNodes)
-    count = 0
-    while Points:
-        numb = None
-        tempList = []
-        termLine = []
-        concaveNode = []
-        filletNodes = []
-        #find termLine
-        if skeletNodes:
-            for i in range(lenSkeletNodes):
-                if skeletNodes[i][-1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
-                    numb = i
-                    if skeletNodes[i][-1]._eq(Points[0]): concaveNode.append(skeletNodes[i][0])
-                    else: concaveNode.append(skeletNodes[i][-1])
-                    break
-            # find fillet nodes
-            if Points[0].List : 
-                for k in range(len(Points[0].List)): filletNodes.append(Points[0].List[k])
-            else: filletNodes.append(Points[0])
-            if concaveNode[0].List:
-                for k in range(len(concaveNode[0].List)): filletNodes.append(concaveNode[0].List[k])
-
-            #find all term lines from concave node
-            for i in range(lenSkeletNodes):
-                if (skeletNodes[i][0]._eq(concaveNode[0])  or
-                    skeletNodes[i][-1]._eq(concaveNode[0]) ):
-                    tempList.append(skeletNodes[i])
-                
-            #find max distance
-            if filletNodes: 
-                maxD = Line(filletNodes[0], concaveNode[0]).dist_points()
-                for i in range(1, len(filletNodes)):
-                    maxD = max(maxD, Line(filletNodes[i], concaveNode[0]).dist_points())
-                if maxD < e:
-                    # check term point
-                    for i in range(len(tempList)): 
-                        if tempList[i][0]._eq(concaveNode[0]): tempList[i][0].setList(filletNodes)
-                        else: tempList[i][-1].setList(filletNodes)
-
-                
-                    if len(tempList) == 2:
-                        Points.append(concaveNode[0])
-                
-                    skeletNodes.remove(skeletNodes[numb])
-                    lenSkeletNodes = len(skeletNodes)
-        Points.remove(Points[0])
+    if e > 0:
         lenPoints = len(Points)
         lenSkeletNodes = len(skeletNodes)
-        
+        count = 0
+        while Points:
+            numb = None
+            tempList = []
+            termLine = []
+            concaveNode = []
+            filletNodes = []
+            #find termLine
+            if skeletNodes:
+                for i in range(lenSkeletNodes):
+                    if skeletNodes[i][-1]._eq(Points[0]) or skeletNodes[i][0]._eq(Points[0]): 
+                        numb = i
+                        if skeletNodes[i][-1]._eq(Points[0]): concaveNode.append(skeletNodes[i][0])
+                        else: concaveNode.append(skeletNodes[i][-1])
+                        break
+                # find fillet nodes
+                if Points[0].List : 
+                    for k in range(len(Points[0].List)): filletNodes.append(Points[0].List[k])
+                else: filletNodes.append(Points[0])
+                if concaveNode[0].List:
+                    for k in range(len(concaveNode[0].List)): filletNodes.append(concaveNode[0].List[k])
+
+                #find all term lines from concave node
+                for i in range(lenSkeletNodes):
+                    if (skeletNodes[i][0]._eq(concaveNode[0])  or
+                        skeletNodes[i][-1]._eq(concaveNode[0]) ):
+                        tempList.append(skeletNodes[i])
+                
+                #find max distance
+                if filletNodes: 
+                    maxD = Line(filletNodes[0], concaveNode[0]).dist_points()
+                    for i in range(1, len(filletNodes)):
+                        maxD = max(maxD, Line(filletNodes[i], concaveNode[0]).dist_points())
+                    if maxD < e:
+                        # check term point
+                        for i in range(len(tempList)): 
+                            if tempList[i][0]._eq(concaveNode[0]): tempList[i][0].setList(filletNodes)
+                            else: tempList[i][-1].setList(filletNodes)
+
+                
+                        if len(tempList) == 2:
+                            Points.append(concaveNode[0])
+                
+                        skeletNodes.remove(skeletNodes[numb])
+                        lenSkeletNodes = len(skeletNodes)
+            Points.remove(Points[0])
+            lenPoints = len(Points)
+            lenSkeletNodes = len(skeletNodes)
+    if skeletNodes == []:
+            inkex.errormsg(("You have entered is too large exponent value."))
+            
     return skeletNodes
 
 class Skeleton(inkex.Effect):
@@ -932,6 +931,10 @@ class Skeleton(inkex.Effect):
                                      action="store", type="int",
                                      dest="exponent", default=0,
                                      help="regularization")
+        self.OptionParser.add_option("-f", "--flatness",
+                        action="store", type="float", 
+                        dest="flat", default=10.0,
+                        help="Minimum flatness of the subdivided curves")
     def duplicateNodes(self, aList):
         clones={}
         for id,node in aList.iteritems():
@@ -954,12 +957,15 @@ class Skeleton(inkex.Effect):
             inkex.errormsg(("This extension requires greater than or equal to 1 selected paths."))
             return
         List = []
+        P = []
         Id = 0
         for id, node in self.selected.iteritems():
+
             if node.tag == inkex.addNS('path','svg'):
                 Id=id
                 p = cubicsuperpath.parsePath(node.get('d'))
-                inkex.debug("nodes: %s" % p)
+                cspsubdiv.cspsubdiv(p, self.options.flat)
+                #inkex.debug("nodes: %s" % p)
                 List.append([termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0])))), 
                              atermNode(getPoints(p[0])), yTermNode(getPoints(p[0])), ayTermNode(getPoints(p[0])),
                             termNodes(getBypassPoints(getLines(getPoints(p[0]))), concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))) ])
@@ -971,7 +977,6 @@ class Skeleton(inkex.Effect):
             if self.options.copymode:
                 duplist=self.duplicateNodes({id:self.patternNode})
                 self.patternNode = duplist.values()[0]
-            #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(List[0][0],List[0][1],List[0][2]))))
 
             node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[0][0],List[0][1],List[0][2]), List[0][6], self.options.exponent))))
 
@@ -991,23 +996,11 @@ class Skeleton(inkex.Effect):
                         if self.options.copymode:
                             duplist=self.duplicateNodes({id:self.patternNode})
                             self.patternNode = duplist.values()[0]
-            #for n in range(len(L)): 
-                        #node.set('d',simplepath.formatPath(AbsPath(Skeletonization(L[n][0],L[n][1],L[n][2]))))
                         node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][6], self.options.exponent))))
 
 if __name__ == '__main__':
     e = Skeleton()
     e.affect() 
 
-
-#Lllist = []
-#Lllist.append([termNode(getPoints(p0[0])),getLines(getPoints(p0[0])),concaveNodes(getBypassPoints(getLines(getPoints(p0[0])))), atermNode(getPoints(p0[0])), yTermNode(getPoints(p0[0])), ayTermNode(getPoints(p0[0])) ])
-#Lllist.append([termNode(getPoints(p1[0])),getLines(getPoints(p1[0])),concaveNodes(getBypassPoints(getLines(getPoints(p1[0])))), atermNode(getPoints(p1[0])), yTermNode(getPoints(p1[0])), ayTermNode(getPoints(p1[0])) ])
-#Lllist.append([termNode(getPoints(p2[0])),getLines(getPoints(p2[0])),concaveNodes(getBypassPoints(getLines(getPoints(p2[0])))), atermNode(getPoints(p2[0])), yTermNode(getPoints(p2[0])), ayTermNode(getPoints(p2[0])) ])
-#Lllist.append([termNode(getPoints(p3[0])),getLines(getPoints(p3[0])),concaveNodes(getBypassPoints(getLines(getPoints(p3[0])))), atermNode(getPoints(p3[0])), yTermNode(getPoints(p3[0])), ayTermNode(getPoints(p3[0])) ])
-
-#Lll = mergeLists(Lllist)
-
-#print(AbsPath(Skeletonization(Lll[0][0],Lll[0][1],Lll[0][2])))
 
 #print(AbsPath(Regularization(Skeletonization(termNode(getPoints(p[0])),getLines(getPoints(p[0])),concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), termNodes(getBypassPoints(getLines(getPoints(p[0]))), concaveNodes(getBypassPoints(getLines(getPoints(p[0]))))), 0 )))
