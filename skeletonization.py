@@ -1007,7 +1007,7 @@ class Skeleton(inkex.Effect):
                         if self.options.copymode:
                             duplist=self.duplicateNodes({id:self.patternNode})
                             self.patternNode = duplist.values()[0]
-                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(List[n][0],List[n][1],List[n][2]), List[n][6], self.options.exponent))))
+                        node.set('d',simplepath.formatPath(AbsPath(Regularization(Skeletonization(L[n][0],L[n][1],L[n][2]), L[n][6], self.options.exponent))))
 
 if __name__ == '__main__':
     e = Skeleton()
