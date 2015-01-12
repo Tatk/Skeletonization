@@ -355,6 +355,8 @@ def paramA1( A0, A1, point):
              [[A0[1], A0[0], -A0[0]*point.y - A0[1]*point.x], [A0[0], A0[1], A0[2]]]]
         X1 = centreOfFirstCase([X[0]])
         X2 = centreOfFirstCase([X[1]])
+        xn = (X1[0]+X2[0])/2
+        yn = (X1[1]+X2[1])/2
         d = Line(point,Point(xn, yn)).dist_points()
         if not math.fabs(xn - point.x) < 0.001:
             return [[(d**2 - point.x**2 + xn**2 - point.y**2 + yn**2)/2/(xn - point.x)],
